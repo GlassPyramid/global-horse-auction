@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { Toaster } from "@/components/ui/toaster";
 
 const playfair = Playfair_Display({
@@ -53,9 +52,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-[#060c1d] text-[#f0ead8]">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ConditionalLayout>{children}</ConditionalLayout>
         <Toaster />
       </body>
     </html>

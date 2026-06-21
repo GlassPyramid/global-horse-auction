@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, ChevronDown, User, LogOut, Heart, Gavel } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Menu, X, ChevronDown, User, LogOut, Heart, Gavel, LayoutDashboard, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const navLinks = [
   {
@@ -30,21 +33,56 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-// Mock auth state — replace with real session
-const mockLoggedIn = true;
-const mockUser = { name: "Gianni Doncarlo", initials: "GD" };
-
 export function Navbar() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) {
+        setDisplayName(user.user_metadata?.full_name ?? user.email ?? "");
+        supabase.from("profiles").select("role, full_name").eq("id", user.id).single().then(({ data }) => {
+          if (data?.role === "ADMIN") setIsAdmin(true);
+          if (data?.full_name) setDisplayName(data.full_name);
+        });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) { setIsAdmin(false); setDisplayName(""); }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsAdmin(false);
+    setUserMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  };
+
+  const initials = displayName
+    ? displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
 
   return (
     <header
@@ -57,67 +95,36 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <GHALogo />
             <div className="hidden sm:block">
-              <div
-                className="text-lg font-bold tracking-widest text-white leading-none font-[family-name:var(--font-playfair)]"
-                style={{ letterSpacing: "0.25em" }}
-              >
+              <div className="text-lg font-bold tracking-widest text-white leading-none font-[family-name:var(--font-playfair)]" style={{ letterSpacing: "0.25em" }}>
                 GLOBAL
               </div>
-              <div
-                className="text-sm tracking-widest font-bold leading-none"
-                style={{
-                  color: "#c9a84c",
-                  letterSpacing: "0.35em",
-                  fontFamily: "var(--font-inter)",
-                }}
-              >
+              <div className="text-sm tracking-widest font-bold leading-none" style={{ color: "#c9a84c", letterSpacing: "0.35em", fontFamily: "var(--font-inter)" }}>
                 HORSE AUCTION
               </div>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <div
-                key={link.label}
-                className="relative"
+              <div key={link.label} className="relative"
                 onMouseEnter={() => link.children && setOpenDropdown(link.label)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
-                <Link
-                  href={link.href}
-                  className={cn(
-                    "flex items-center gap-1 px-4 py-2 text-sm tracking-wider font-[family-name:var(--font-inter)] font-medium",
-                    "text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200",
-                    "uppercase",
-                    openDropdown === link.label && "text-[#c9a84c]"
-                  )}
+                <Link href={link.href}
+                  className={cn("flex items-center gap-1 px-4 py-2 text-sm tracking-wider font-[family-name:var(--font-inter)] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200 uppercase", openDropdown === link.label && "text-[#c9a84c]")}
                 >
                   {link.label}
-                  {link.children && (
-                    <ChevronDown
-                      className={cn(
-                        "w-3 h-3 transition-transform",
-                        openDropdown === link.label && "rotate-180"
-                      )}
-                    />
-                  )}
+                  {link.children && <ChevronDown className={cn("w-3 h-3 transition-transform", openDropdown === link.label && "rotate-180")} />}
                 </Link>
-
                 {link.children && openDropdown === link.label && (
                   <div className="absolute top-full left-0 pt-2">
                     <div className="bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl min-w-52">
                       {link.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="block px-5 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0"
-                        >
+                        <Link key={child.href} href={child.href}
+                          className="block px-5 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0">
                           {child.label}
                         </Link>
                       ))}
@@ -128,53 +135,46 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Right side */}
           <div className="flex items-center gap-3">
-            {mockLoggedIn ? (
+            {user ? (
               <div className="hidden lg:flex items-center gap-3">
-                <Link
-                  href="/portal/watchlist"
-                  className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors"
-                  aria-label="Watchlist"
-                >
+                <Link href="/portal/watchlist" className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" aria-label="Watchlist">
                   <Heart className="w-5 h-5" />
                 </Link>
-
+                {isAdmin && (
+                  <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-wider">
+                    <Shield className="w-3.5 h-3.5" /> Admin
+                  </Link>
+                )}
                 <div className="relative">
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/20 hover:border-[#c9a84c]/50 transition-all"
-                  >
+                  <button onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/20 hover:border-[#c9a84c]/50 transition-all">
                     <div className="w-7 h-7 rounded-full bg-[#c9a84c] flex items-center justify-center text-xs font-bold text-[#060c1d] font-[family-name:var(--font-inter)]">
-                      {mockUser.initials}
+                      {initials}
                     </div>
                     <ChevronDown className={cn("w-3 h-3 text-[#c9a84c] transition-transform", userMenuOpen && "rotate-180")} />
                   </button>
-
                   {userMenuOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl">
                       <div className="px-4 py-3 border-b border-[#c9a84c]/10">
-                        <p className="text-sm font-semibold text-white font-[family-name:var(--font-inter)]">{mockUser.name}</p>
-                        <p className="text-xs text-[#7a8fa8]">Premium Bidder</p>
+                        <p className="text-sm font-semibold text-white font-[family-name:var(--font-inter)]">{displayName}</p>
+                        <p className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">{isAdmin ? "Admin" : "Bidder"}</p>
                       </div>
                       {[
                         { href: "/portal", label: "My Portal", icon: <User className="w-4 h-4" /> },
                         { href: "/portal/bids", label: "My Bids", icon: <Gavel className="w-4 h-4" /> },
                         { href: "/portal/watchlist", label: "Watchlist", icon: <Heart className="w-4 h-4" /> },
+                        ...(isAdmin ? [{ href: "/admin", label: "Admin Panel", icon: <LayoutDashboard className="w-4 h-4" /> }] : []),
                       ].map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0"
-                        >
+                        <Link key={item.href} href={item.href} onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0">
                           <span className="text-[#c9a84c]/60">{item.icon}</span>
                           {item.label}
                         </Link>
                       ))}
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-400/5 transition-colors font-[family-name:var(--font-inter)]">
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
+                      <button onClick={handleSignOut}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-400/5 transition-colors font-[family-name:var(--font-inter)]">
+                        <LogOut className="w-4 h-4" /> Sign Out
                       </button>
                     </div>
                   )}
@@ -182,56 +182,50 @@ export function Navbar() {
               </div>
             ) : (
               <div className="hidden lg:flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="px-5 py-2 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wider uppercase"
-                >
+                <Link href="/login" className="px-5 py-2 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wider uppercase">
                   Sign In
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-5 py-2 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase"
-                >
+                <Link href="/register" className="px-5 py-2 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
                   Register
                 </Link>
               </div>
             )}
 
-            {/* Mobile toggle */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 text-[#a8bfd4] hover:text-[#c9a84c] transition-colors"
-              aria-label="Menu"
-            >
+            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 text-[#a8bfd4] hover:text-[#c9a84c] transition-colors" aria-label="Menu">
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {mobileOpen && (
         <div className="lg:hidden bg-[#0a1428]/98 backdrop-blur-md border-t border-[#c9a84c]/15">
           <div className="px-6 py-4 space-y-1">
             {navLinks.map((link) => (
-              <div key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-3 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-widest uppercase border-b border-[#c9a84c]/10"
-                >
-                  {link.label}
+              <Link key={link.label} href={link.href} onClick={() => setMobileOpen(false)}
+                className="block py-3 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-widest uppercase border-b border-[#c9a84c]/10">
+                {link.label}
+              </Link>
+            ))}
+            {user ? (
+              <div className="pt-4 flex gap-3">
+                <Link href="/portal" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#c9a84c] rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
+                  My Portal
+                </Link>
+                <button onClick={handleSignOut} className="flex-1 text-center py-2.5 text-sm font-medium border border-red-400/30 text-red-400 rounded hover:bg-red-400/5 transition-all font-[family-name:var(--font-inter)]">
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="pt-4 flex gap-3">
+                <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#a8bfd4] rounded hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all font-[family-name:var(--font-inter)]">
+                  Sign In
+                </Link>
+                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
+                  Register
                 </Link>
               </div>
-            ))}
-            <div className="pt-4 flex gap-3">
-              <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#a8bfd4] rounded hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all font-[family-name:var(--font-inter)]">
-                Sign In
-              </Link>
-              <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
-                Register
-              </Link>
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -242,17 +236,8 @@ export function Navbar() {
 function GHALogo() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M20 4C20 4 14 8 13 14C12 18 14 20 16 21C14 22 12 24 13 28C14 33 19 36 20 36C21 36 26 33 27 28C28 24 26 22 24 21C26 20 28 18 27 14C26 8 20 4 20 4Z"
-        fill="#c9a84c"
-        opacity="0.9"
-      />
-      <path
-        d="M16 18C16 18 18 17 20 17C22 17 24 18 24 18"
-        stroke="#060c1d"
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
+      <path d="M20 4C20 4 14 8 13 14C12 18 14 20 16 21C14 22 12 24 13 28C14 33 19 36 20 36C21 36 26 33 27 28C28 24 26 22 24 21C26 20 28 18 27 14C26 8 20 4 20 4Z" fill="#c9a84c" opacity="0.9" />
+      <path d="M16 18C16 18 18 17 20 17C22 17 24 18 24 18" stroke="#060c1d" strokeWidth="1" strokeLinecap="round" />
       <circle cx="17" cy="14" r="1.5" fill="#060c1d" />
     </svg>
   );
