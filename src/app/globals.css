@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* GHA Brand Palette */
+  --gha-navy: #060c1d;
+  --gha-navy-mid: #0a1428;
+  --gha-navy-light: #111e38;
+  --gha-gold: #c9a84c;
+  --gha-gold-light: #e2c97e;
+  --gha-gold-dark: #9a7a30;
+  --gha-green: #0d2b1e;
+  --gha-green-mid: #163d2a;
+  --gha-burgundy: #2d0f1a;
+  --gha-burgundy-mid: #3d1522;
+  --gha-slate: #7a8fa8;
+  --gha-slate-light: #a8bfd4;
+  --gha-cream: #f0ead8;
+  --gha-white: #ffffff;
+
+  --background: var(--gha-navy);
+  --foreground: var(--gha-cream);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--gha-navy);
+  color: var(--gha-cream);
+  scroll-behavior: smooth;
 }
+
+/* Gold divider ornament */
+.gha-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.gha-divider::before,
+.gha-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gha-gold), transparent);
+}
+
+/* Gradient overlays */
+.gradient-hero {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 29, 0.2) 0%,
+    rgba(6, 12, 29, 0.5) 50%,
+    rgba(6, 12, 29, 0.95) 100%
+  );
+}
+
+.gradient-card {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 29, 0) 40%,
+    rgba(6, 12, 29, 0.98) 100%
+  );
+}
+
+/* Gold glow */
+.glow-gold {
+  box-shadow: 0 0 30px rgba(201, 168, 76, 0.25);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--gha-navy-mid);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gha-gold-dark);
+  border-radius: 3px;
+}
+
+/* Bid flash animation */
+@keyframes bid-flash {
+  0% { background-color: rgba(201, 168, 76, 0.3); }
+  100% { background-color: transparent; }
+}
+.bid-flash {
+  animation: bid-flash 1s ease-out;
+}
+
+/* Category badge colors */
+.category-future-stars { background: #163d2a; color: #4dcc8a; border-color: #4dcc8a30; }
+.category-competition-ready { background: #1a2d4a; color: #4da6ff; border-color: #4da6ff30; }
+.category-elite-sport { background: #3d1522; color: #ff6b8a; border-color: #ff6b8a30; }
+.category-breeding { background: #3a2800; color: #ffb84d; border-color: #ffb84d30; }

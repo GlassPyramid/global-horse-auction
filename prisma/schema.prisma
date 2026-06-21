@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  password    String?
+  name        String?
+  phone       String?
+  country     String?
+  avatar      String?
+  role        String      @default("BIDDER")
+  bids        Bid[]
+  watchlist   Watchlist[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Horse {
+  id            String      @id @default(cuid())
+  name          String
+  breed         String
+  age           Int
+  gender        String
+  color         String
+  heightCm      Float
+  country       String
+  sire          String?
+  dam           String?
+  discipline    String
+  category      String
+  description   String
+  startingPrice Float
+  currentPrice  Float
+  currency      String      @default("EUR")
+  vetChecked    Boolean     @default(false)
+  featured      Boolean     @default(false)
+  images        String
+  videoUrl      String?
+  auctionId     String?
+  auction       Auction?    @relation(fields: [auctionId], references: [id])
+  bids          Bid[]
+  watchlist     Watchlist[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Auction {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      String    @default("UPCOMING")
+  featured    Boolean   @default(false)
+  coverImage  String?
+  horses      Horse[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Float
+  currency  String   @default("EUR")
+  userId    String
+  horseId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  horse     Horse    @relation(fields: [horseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([horseId])
+  @@index([userId])
+}
+
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  horseId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  horse     Horse    @relation(fields: [horseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, horseId])
+}
