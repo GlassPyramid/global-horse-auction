@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { CountdownTimer } from "@/components/auctions/countdown-timer";
+import { AuctionActions } from "./AuctionActions";
 
 const statusConfig = {
   LIVE: { label: "Live", class: "bg-red-400/10 text-red-400 border-red-400/20" },
@@ -73,6 +74,7 @@ export default async function AdminAuctionsPage() {
                   </div>
                 </div>
               </div>
+              <AuctionActions auctionId={auction.id} currentStatus={auction.status} />
             </div>
           );
         })}

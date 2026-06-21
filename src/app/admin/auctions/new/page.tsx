@@ -7,7 +7,8 @@ import Link from "next/link";
 
 export default function NewAuctionPage() {
   const router = useRouter();
-  const [saved, setSaved] = useState(false);
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     title: "", description: "", startDate: "", endDate: "",
     status: "UPCOMING", featured: false, coverImage: "",
@@ -18,9 +19,34 @@ export default function NewAuctionPage() {
     setForm((f) => ({ ...f, [field]: value }));
   };
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => router.push("/admin/auctions"), 1500);
+  const handleSave = async () => {
+    if (!form.title || !form.startDate || !form.endDate) {
+      setError("Title, start date and end date are required.");
+      return;
+    }
+    setState("loading");
+    setError("");
+    const res = await fetch("/api/admin/auctions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: form.title,
+        description: form.description || null,
+        start_date: new Date(form.startDate).toISOString(),
+        end_date: new Date(form.endDate).toISOString(),
+        status: form.status,
+        featured: form.featured,
+        cover_image: form.coverImage || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error ?? "Failed to create auction.");
+      setState("error");
+    } else {
+      setState("success");
+      setTimeout(() => router.push("/admin/auctions"), 1200);
+    }
   };
 
   return (
@@ -33,26 +59,20 @@ export default function NewAuctionPage() {
       </div>
 
       <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 p-6 space-y-5">
+        {error && (
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-[family-name:var(--font-inter)]">{error}</div>
+        )}
+
         <div>
           <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Auction Title <span className="text-red-400">*</span></label>
-          <input
-            value={form.title}
-            onChange={set("title")}
-            placeholder="e.g. Summer Elite Collection 2026"
-            required
-            className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]"
-          />
+          <input value={form.title} onChange={set("title")} placeholder="e.g. Summer Elite Collection 2026" required
+            className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]" />
         </div>
 
         <div>
           <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Description</label>
-          <textarea
-            value={form.description}
-            onChange={set("description")}
-            placeholder="Describe this auction collection..."
-            rows={4}
-            className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70] resize-none"
-          />
+          <textarea value={form.description} onChange={set("description")} placeholder="Describe this auction collection..." rows={4}
+            className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70] resize-none" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -60,45 +80,30 @@ export default function NewAuctionPage() {
             <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 flex items-center gap-1.5">
               <Calendar className="w-3 h-3" /> Start Date <span className="text-red-400">*</span>
             </label>
-            <input
-              type="datetime-local"
-              value={form.startDate}
-              onChange={set("startDate")}
-              required
-              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors"
-            />
+            <input type="datetime-local" value={form.startDate} onChange={set("startDate")} required
+              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors" />
           </div>
           <div>
             <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 flex items-center gap-1.5">
               <Calendar className="w-3 h-3" /> End Date <span className="text-red-400">*</span>
             </label>
-            <input
-              type="datetime-local"
-              value={form.endDate}
-              onChange={set("endDate")}
-              required
-              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors"
-            />
+            <input type="datetime-local" value={form.endDate} onChange={set("endDate")} required
+              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Status</label>
-            <select value={form.status} onChange={set("status")} className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors">
-              {["UPCOMING", "LIVE", "CLOSED", "COMPLETED"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
+            <select value={form.status} onChange={set("status")}
+              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors">
+              {["UPCOMING", "LIVE", "CLOSED", "COMPLETED"].map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>
             <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Cover Image URL</label>
-            <input
-              value={form.coverImage}
-              onChange={set("coverImage")}
-              placeholder="https://..."
-              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]"
-            />
+            <input value={form.coverImage} onChange={set("coverImage")} placeholder="https://..."
+              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]" />
           </div>
         </div>
 
@@ -110,13 +115,12 @@ export default function NewAuctionPage() {
           <span className="text-sm text-[#a8bfd4] font-[family-name:var(--font-inter)]">Feature this auction on the homepage</span>
         </label>
 
-        <button
-          onClick={handleSave}
-          className={`w-full flex items-center justify-center gap-2 py-4 font-bold text-sm tracking-widest uppercase transition-all font-[family-name:var(--font-inter)] rounded-xl ${
-            saved ? "bg-green-500 text-white" : "bg-[#c9a84c] text-[#060c1d] hover:bg-[#e2c97e] glow-gold"
+        <button onClick={handleSave} disabled={state === "loading" || state === "success"}
+          className={`w-full flex items-center justify-center gap-2 py-4 font-bold text-sm tracking-widest uppercase transition-all font-[family-name:var(--font-inter)] rounded-xl disabled:opacity-60 ${
+            state === "success" ? "bg-green-500 text-white" : "bg-[#c9a84c] text-[#060c1d] hover:bg-[#e2c97e] glow-gold"
           }`}
         >
-          {saved ? <><CheckCircle className="w-4 h-4" /> Created!</> : <><Save className="w-4 h-4" /> Create Auction</>}
+          {state === "success" ? <><CheckCircle className="w-4 h-4" /> Created!</> : state === "loading" ? "Creating..." : <><Save className="w-4 h-4" /> Create Auction</>}
         </button>
       </div>
     </div>
