@@ -40,9 +40,14 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Admin-only protection
+  // Admin-only protection — use service role to bypass RLS
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    const { data: profile } = await supabase
+    const adminSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { getAll: () => [], setAll: () => {} } }
+    );
+    const { data: profile } = await adminSupabase
       .from("profiles")
       .select("role")
       .eq("id", user?.id)
