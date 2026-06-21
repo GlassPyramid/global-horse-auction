@@ -2,11 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/auction-status",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/outbid-notifications",
-      "schedule": "* * * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }
