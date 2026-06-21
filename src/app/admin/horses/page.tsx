@@ -1,21 +1,23 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { Plus, Eye } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { formatCurrency, categoryLabel, categoryClass } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { AdminHorseActions } from "./AdminHorseActions";
 
 export default async function AdminHorsesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login?redirectTo=/admin/horses");
-
-  const { data: horses } = await supabase
+  const service = createServiceClient();
+  const { data: horses } = await service
     .from("horses")
-    .select("id, name, breed, age, gender, country, category, current_price, currency, vet_checked, featured, images, bids(count)")
+    .select("id, name, breed, age, gender, country, category, current_price, currency, vet_checked, featured, images")
     .order("created_at", { ascending: false });
+
+  const { data: bidCounts } = await service
+    .from("bids")
+    .select("horse_id");
 
   return (
     <div className="space-y-6">
@@ -42,7 +44,7 @@ export default async function AdminHorsesPage() {
             <tbody className="divide-y divide-[#c9a84c]/5">
               {(horses ?? []).map((horse) => {
                 const primaryImage = horse.images?.[0] ?? "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=200&q=80";
-                const bidCount = (horse.bids as unknown as { count: number }[])?.[0]?.count ?? 0;
+                const bidCount = (bidCounts ?? []).filter((b) => b.horse_id === horse.id).length;
                 return (
                   <tr key={horse.id} className="hover:bg-[#c9a84c]/2 transition-colors">
                     <td className="px-6 py-4">

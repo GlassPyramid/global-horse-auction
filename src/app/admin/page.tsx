@@ -23,8 +23,8 @@ export default async function AdminDashboard() {
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase.from("auctions").select("id, title, end_date, status").eq("status", "LIVE"),
     supabase.from("bids").select("id, amount, created_at, horses(name), profiles(full_name, email)").order("created_at", { ascending: false }).limit(6),
-    supabase.from("horses").select("id, name, breed, category, current_price, currency, featured, bids(count)").order("created_at", { ascending: false }),
-    supabase.from("bids").select("amount"),
+    supabase.from("horses").select("id, name, breed, category, current_price, currency, featured").order("created_at", { ascending: false }),
+    supabase.from("bids").select("amount, horse_id"),
   ]);
 
   const totalVolume = (bidVolume ?? []).reduce((sum, b) => sum + Number(b.amount), 0);
@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-[#c9a84c]/5">
               {(horses ?? []).map((horse) => {
-                const bidCount = (horse.bids as unknown as { count: number }[])?.[0]?.count ?? 0;
+                const bidCount = (bidVolume ?? []).filter((b: {horse_id?: string}) => b.horse_id === horse.id).length;
                 return (
                   <tr key={horse.id} className="hover:bg-[#c9a84c]/2 transition-colors">
                     <td className="px-6 py-4">
