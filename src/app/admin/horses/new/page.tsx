@@ -1,34 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ImagePlus, Save, ArrowLeft, CheckCircle } from "lucide-react";
+import { Save, ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { createClient } from "@/lib/supabase/client";
 
 const categories = ["FUTURE_STARS", "COMPETITION_READY", "ELITE_SPORT", "BREEDING_INVESTMENT"];
+const categoryLabels: Record<string, string> = {
+  FUTURE_STARS: "Future Stars",
+  COMPETITION_READY: "Competition Ready",
+  ELITE_SPORT: "Elite Sport",
+  BREEDING_INVESTMENT: "Breeding & Investment",
+};
 const genders = ["STALLION", "MARE", "GELDING"];
 const disciplines = ["Dressage", "Show Jumping", "Eventing", "Breeding", "Working Equitation", "Endurance", "Reining", "Other"];
 
+type Auction = { id: string; title: string; status: string };
+
 export default function AddHorsePage() {
   const router = useRouter();
-  const [saved, setSaved] = useState(false);
+  const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [auctions, setAuctions] = useState<Auction[]>([]);
+
   const [form, setForm] = useState({
     name: "", breed: "", age: "", gender: "MARE", color: "", heightCm: "",
     country: "", sire: "", dam: "", discipline: "Dressage", category: "COMPETITION_READY",
-    description: "", startingPrice: "", currency: "EUR",
-    vetChecked: false, featured: false, videoUrl: "",
+    description: "", startingPrice: "", currency: "EUR", lotNumber: "",
+    vetChecked: false, featured: false, videoUrl: "", auctionId: "",
   });
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.from("auctions").select("id, title, status").order("start_date", { ascending: false }).then(({ data }) => {
+      if (data) setAuctions(data);
+    });
+  }, []);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
     setForm((f) => ({ ...f, [field]: value }));
   };
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => {
-      router.push("/admin/horses");
-    }, 1500);
+  const handleSave = async () => {
+    if (!form.name || !form.breed || !form.age || !form.color || !form.heightCm || !form.country || !form.description || !form.startingPrice) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+    if (images.length === 0) {
+      setError("Please upload at least one photo.");
+      return;
+    }
+    setState("loading");
+    setError("");
+    const res = await fetch("/api/admin/horses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name, breed: form.breed, age: form.age,
+        gender: form.gender, color: form.color,
+        height_cm: form.heightCm, country: form.country,
+        sire: form.sire, dam: form.dam,
+        discipline: form.discipline, category: form.category,
+        description: form.description,
+        starting_price: form.startingPrice,
+        currency: form.currency,
+        vet_checked: form.vetChecked,
+        featured: form.featured,
+        video_url: form.videoUrl,
+        auction_id: form.auctionId || null,
+        lot_number: form.lotNumber || null,
+        images,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error ?? "Failed to save horse.");
+      setState("error");
+    } else {
+      setState("success");
+      setTimeout(() => router.push("/admin/horses"), 1200);
+    }
   };
 
   return (
@@ -40,10 +95,14 @@ export default function AddHorsePage() {
         <h1 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)]">Add Horse</h1>
       </div>
 
+      {error && (
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-[family-name:var(--font-inter)]">{error}</div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Basic info */}
+
           <FormSection title="Basic Information">
             <div className="grid grid-cols-2 gap-4">
               <Field label="Horse Name" value={form.name} onChange={set("name")} placeholder="e.g. Valeria W" required />
@@ -63,82 +122,77 @@ export default function AddHorsePage() {
             </div>
           </FormSection>
 
-          {/* Description */}
           <FormSection title="Description">
             <div>
               <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">
                 Full Description <span className="text-red-400">*</span>
               </label>
               <textarea
-                value={form.description}
-                onChange={set("description")}
-                placeholder="Detailed description of the horse — competition record, character, movement, why it's exceptional..."
-                rows={8}
-                required
+                value={form.description} onChange={set("description")}
+                placeholder="Detailed description — competition record, character, movement, why it's exceptional..."
+                rows={8} required
                 className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70] resize-none"
               />
               <p className="text-[10px] text-[#4a5a70] mt-1 font-[family-name:var(--font-inter)]">
-                {form.description.length} characters — aim for 300-600 for best results
+                {form.description.length} chars · aim for 300–600
               </p>
             </div>
             <Field label="Video URL (YouTube or Vimeo)" value={form.videoUrl} onChange={set("videoUrl")} placeholder="https://youtube.com/watch?v=..." />
           </FormSection>
 
-          {/* Images */}
           <FormSection title="Photos">
-            <div className="border-2 border-dashed border-[#c9a84c]/20 rounded-xl p-8 text-center hover:border-[#c9a84c]/40 transition-colors cursor-pointer">
-              <ImagePlus className="w-8 h-8 text-[#c9a84c]/40 mx-auto mb-3" />
-              <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-                Drop photos here or click to upload
-              </p>
-              <p className="text-xs text-[#4a5a70] mt-1 font-[family-name:var(--font-inter)]">
-                PNG, JPG up to 10MB each. Minimum 3 photos required.
-              </p>
-              <button className="mt-4 px-4 py-2 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-semibold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
-                Choose Files
-              </button>
-            </div>
+            <ImageUpload urls={images} onChange={setImages} />
+            <p className="text-[10px] text-[#4a5a70] font-[family-name:var(--font-inter)]">
+              First photo is the cover. Drag handles to reorder. Minimum 1 required.
+            </p>
           </FormSection>
         </div>
 
-        {/* Right: Pricing & flags */}
+        {/* Right sidebar */}
         <div className="space-y-6">
-          <FormSection title="Auction Settings">
-            <SelectField label="Category" value={form.category} onChange={set("category")}>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+          <FormSection title="Assign to Auction">
+            <SelectField label="Auction" value={form.auctionId} onChange={set("auctionId")}>
+              <option value="">— No auction yet —</option>
+              {auctions.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.title} ({a.status})
+                </option>
               ))}
             </SelectField>
+            <Field label="Lot Number" type="number" value={form.lotNumber} onChange={set("lotNumber")} placeholder="e.g. 1" />
+          </FormSection>
+
+          <FormSection title="Pricing">
             <Field label="Starting Price" type="number" value={form.startingPrice} onChange={set("startingPrice")} placeholder="e.g. 95000" required />
             <SelectField label="Currency" value={form.currency} onChange={set("currency")}>
               {["EUR", "USD", "GBP", "CHF"].map((c) => <option key={c} value={c}>{c}</option>)}
             </SelectField>
           </FormSection>
 
+          <FormSection title="Category">
+            <div className="grid grid-cols-1 gap-2">
+              {categories.map((c) => (
+                <label key={c} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${form.category === c ? "border-[#c9a84c] bg-[#c9a84c]/5" : "border-[#c9a84c]/10 hover:border-[#c9a84c]/30"}`}>
+                  <input type="radio" name="category" value={c} checked={form.category === c} onChange={set("category")} className="accent-[#c9a84c]" />
+                  <span className="text-sm font-semibold text-white font-[family-name:var(--font-inter)]">{categoryLabels[c]}</span>
+                </label>
+              ))}
+            </div>
+          </FormSection>
+
           <FormSection title="Flags">
-            <label className="flex items-center gap-3 cursor-pointer group">
-              <div className={`relative w-10 h-5 rounded-full transition-colors ${form.vetChecked ? "bg-[#c9a84c]" : "bg-[#1a2d4a]"}`}>
-                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.vetChecked ? "translate-x-5" : "translate-x-0.5"}`} />
-                <input type="checkbox" checked={form.vetChecked} onChange={set("vetChecked")} className="sr-only" />
-              </div>
-              <span className="text-sm text-[#a8bfd4] font-[family-name:var(--font-inter)]">Vet Checked</span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group mt-3">
-              <div className={`relative w-10 h-5 rounded-full transition-colors ${form.featured ? "bg-[#c9a84c]" : "bg-[#1a2d4a]"}`}>
-                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.featured ? "translate-x-5" : "translate-x-0.5"}`} />
-                <input type="checkbox" checked={form.featured} onChange={set("featured")} className="sr-only" />
-              </div>
-              <span className="text-sm text-[#a8bfd4] font-[family-name:var(--font-inter)]">Featured Lot</span>
-            </label>
+            <Toggle label="Vet Checked ✓" checked={form.vetChecked} onChange={(v) => setForm((f) => ({ ...f, vetChecked: v }))} />
+            <Toggle label="Featured Lot" checked={form.featured} onChange={(v) => setForm((f) => ({ ...f, featured: v }))} />
           </FormSection>
 
           <button
             onClick={handleSave}
-            className={`w-full flex items-center justify-center gap-2 py-4 font-bold text-sm tracking-widest uppercase transition-all font-[family-name:var(--font-inter)] rounded-xl ${
-              saved ? "bg-green-500 text-white" : "bg-[#c9a84c] text-[#060c1d] hover:bg-[#e2c97e] glow-gold"
+            disabled={state === "loading" || state === "success"}
+            className={`w-full flex items-center justify-center gap-2 py-4 font-bold text-sm tracking-widest uppercase transition-all font-[family-name:var(--font-inter)] rounded-xl disabled:opacity-60 ${
+              state === "success" ? "bg-green-500 text-white" : "bg-[#c9a84c] text-[#060c1d] hover:bg-[#e2c97e] glow-gold"
             }`}
           >
-            {saved ? <><CheckCircle className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save Horse</>}
+            {state === "success" ? <><CheckCircle className="w-4 h-4" /> Saved!</> : state === "loading" ? "Saving..." : <><Save className="w-4 h-4" /> Save Horse</>}
           </button>
         </div>
       </div>
@@ -156,7 +210,8 @@ function FormSection({ title, children }: { title: string; children: React.React
 }
 
 function Field({ label, value, onChange, placeholder, type = "text", required = false }: {
-  label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string; type?: string; required?: boolean;
 }) {
   return (
@@ -164,32 +219,36 @@ function Field({ label, value, onChange, placeholder, type = "text", required = 
       <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-1.5 block">
         {label}{required && <span className="text-red-400 ml-1">*</span>}
       </label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-lg px-3 py-2.5 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]"
-      />
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} required={required}
+        className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-lg px-3 py-2.5 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]" />
     </div>
   );
 }
 
 function SelectField({ label, value, onChange, children }: {
-  label: string; value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  label: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   children: React.ReactNode;
 }) {
   return (
     <div>
       <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-1.5 block">{label}</label>
-      <select
-        value={value}
-        onChange={onChange}
-        className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-lg px-3 py-2.5 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors"
-      >
+      <select value={value} onChange={onChange}
+        className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-lg px-3 py-2.5 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors">
         {children}
       </select>
     </div>
+  );
+}
+
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-3 cursor-pointer">
+      <div className={`relative w-10 h-5 rounded-full transition-colors ${checked ? "bg-[#c9a84c]" : "bg-[#1a2d4a]"}`}
+        onClick={() => onChange(!checked)}>
+        <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? "translate-x-5" : "translate-x-0.5"}`} />
+      </div>
+      <span className="text-sm text-[#a8bfd4] font-[family-name:var(--font-inter)]">{label}</span>
+    </label>
   );
 }

@@ -4,14 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft, CheckCircle, Calendar } from "lucide-react";
 import Link from "next/link";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export default function NewAuctionPage() {
   const router = useRouter();
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const [coverImages, setCoverImages] = useState<string[]>([]);
   const [form, setForm] = useState({
     title: "", description: "", startDate: "", endDate: "",
-    status: "UPCOMING", featured: false, coverImage: "",
+    status: "UPCOMING", featured: false,
   });
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -36,7 +38,7 @@ export default function NewAuctionPage() {
         end_date: new Date(form.endDate).toISOString(),
         status: form.status,
         featured: form.featured,
-        cover_image: form.coverImage || null,
+        cover_image: coverImages[0] || null,
       }),
     });
     const data = await res.json();
@@ -101,9 +103,8 @@ export default function NewAuctionPage() {
             </select>
           </div>
           <div>
-            <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Cover Image URL</label>
-            <input value={form.coverImage} onChange={set("coverImage")} placeholder="https://..."
-              className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl px-4 py-3 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]" />
+            <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Cover Image</label>
+            <ImageUpload urls={coverImages} onChange={setCoverImages} maxFiles={1} />
           </div>
         </div>
 
