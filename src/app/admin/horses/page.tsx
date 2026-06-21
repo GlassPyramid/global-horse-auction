@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Eye } from "lucide-react";
+import { Plus, Eye, Pencil } from "lucide-react";
 import { createServiceClient } from "@/lib/supabase/service";
 import { formatCurrency, categoryLabel, categoryClass } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -84,6 +84,9 @@ export default async function AdminHorsesPage() {
                       <div className="flex items-center gap-2">
                         <Link href={`/horses/${horse.id}`} className="p-1.5 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" title="View public page">
                           <Eye className="w-4 h-4" />
+                        </Link>
+                        <Link href={`/admin/horses/${horse.id}/edit`} className="p-1.5 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" title="Edit">
+                          <Pencil className="w-4 h-4" />
                         </Link>
                         <AdminHorseActions horseId={horse.id} horseName={horse.name} />
                       </div>
