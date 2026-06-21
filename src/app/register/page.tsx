@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, User, Mail, Lock, Phone, Globe, ArrowRight, CheckCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const steps = ["Account", "Personal", "Verify"];
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [showPw, setShowPw] = useState(false);
   const [form, setForm] = useState({
@@ -18,13 +21,45 @@ export default function RegisterPage() {
     confirmPassword: "",
     agreeTerms: false,
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const next = () => setStep((s) => Math.min(s + 1, 2));
+  const handleContinue = async () => {
+    setError("");
+
+    if (step === 0) {
+      if (!form.email || !form.password) return setError("Email and password are required.");
+      if (form.password.length < 8) return setError("Password must be at least 8 characters.");
+      if (form.password !== form.confirmPassword) return setError("Passwords do not match.");
+      setStep(1);
+      return;
+    }
+
+    if (step === 1) {
+      if (!form.name) return setError("Full name is required.");
+      if (!form.agreeTerms) return setError("You must agree to the terms.");
+      setLoading(true);
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: { full_name: form.name, phone: form.phone, country: form.country },
+        },
+      });
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      } else {
+        setStep(2);
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#060c1d] flex items-center justify-center px-6 py-20">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-10">
           <div className="text-3xl font-bold tracking-widest text-white font-[family-name:var(--font-playfair)]" style={{ letterSpacing: "0.2em" }}>
             GLOBAL
@@ -34,7 +69,6 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Steps */}
         <div className="flex items-center justify-center gap-0 mb-8">
           {steps.map((label, i) => (
             <div key={label} className="flex items-center">
@@ -62,6 +96,12 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/15 p-8">
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-[family-name:var(--font-inter)]">
+              {error}
+            </div>
+          )}
+
           {step === 0 && (
             <>
               <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)] mb-2">
@@ -173,24 +213,24 @@ export default function RegisterPage() {
               </h1>
               <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-8">
                 Welcome to Global Horse Auction. We&apos;ve sent a verification email to{" "}
-                <span className="text-[#c9a84c]">{form.email || "your email"}</span>.
-                Your account will be approved within 24 hours.
+                <span className="text-[#c9a84c]">{form.email}</span>.
               </p>
-              <Link
-                href="/portal"
+              <button
+                onClick={() => router.push("/portal")}
                 className="inline-flex items-center gap-2 px-8 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl"
               >
                 Go to My Portal <ArrowRight className="w-4 h-4" />
-              </Link>
+              </button>
             </div>
           )}
 
           {step < 2 && (
             <button
-              onClick={next}
-              className="mt-8 w-full flex items-center justify-center gap-2 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl"
+              onClick={handleContinue}
+              disabled={loading}
+              className="mt-8 w-full flex items-center justify-center gap-2 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {step === 0 ? "Continue" : "Create Account"} <ArrowRight className="w-4 h-4" />
+              {loading ? "Creating account..." : <><span>{step === 0 ? "Continue" : "Create Account"}</span> <ArrowRight className="w-4 h-4" /></>}
             </button>
           )}
 

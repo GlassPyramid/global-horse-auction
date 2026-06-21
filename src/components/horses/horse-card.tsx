@@ -23,7 +23,7 @@ interface HorseCardProps {
     currency: string;
     vetChecked: boolean;
     featured: boolean;
-    images: string;
+    images: string | string[];
     bids: { id: string; amount: number }[];
   };
   compact?: boolean;
@@ -37,7 +37,7 @@ const genderLabel: Record<string, string> = {
 
 export function HorseCard({ horse, compact = false }: HorseCardProps) {
   const [watched, setWatched] = useState(false);
-  const images = JSON.parse(horse.images) as string[];
+  const images = (typeof horse.images === "string" ? JSON.parse(horse.images) : horse.images) as string[];
   const primaryImage = images[0];
   const bidCount = horse.bids.length;
 

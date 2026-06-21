@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Shield, Eye, Globe, Trophy, ChevronRight, Star, TrendingUp } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { toHorse, toAuction, type DbHorse, type DbAuction } from "@/lib/types";
 import { mockHorses, mockAuctions } from "@/lib/mock-data";
 import { CountdownTimer } from "@/components/auctions/countdown-timer";
 import { HorseCard } from "@/components/horses/horse-card";
@@ -66,9 +68,33 @@ const stats = [
   { value: "12,000+", label: "Registered bidders" },
 ];
 
-export default function HomePage() {
-  const featuredAuction = mockAuctions[0];
-  const featuredHorses = mockHorses.filter((h) => h.featured).slice(0, 3);
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  const [{ data: auctionRows }, { data: horseRows }] = await Promise.all([
+    supabase
+      .from("auctions")
+      .select("*, horses(*, bids(id, amount, bidder_id, created_at))")
+      .eq("status", "LIVE")
+      .order("created_at", { ascending: false })
+      .limit(1),
+    supabase
+      .from("horses")
+      .select("*, bids(id, amount, bidder_id, created_at)")
+      .eq("featured", true)
+      .order("created_at", { ascending: false })
+      .limit(3),
+  ]);
+
+  const featuredAuction =
+    auctionRows && auctionRows.length > 0
+      ? toAuction(auctionRows[0] as unknown as DbAuction)
+      : mockAuctions[0];
+
+  const featuredHorses =
+    horseRows && horseRows.length > 0
+      ? horseRows.map((h) => toHorse(h as unknown as DbHorse))
+      : mockHorses.filter((h) => h.featured).slice(0, 3);
 
   return (
     <>
