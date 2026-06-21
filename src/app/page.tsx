@@ -371,8 +371,8 @@ export default async function HomePage() {
                 { step: "03", title: "Bid Live or Online", desc: "Place bids in real-time from anywhere in the world with our live bidding system." },
                 { step: "04", title: "Secure Your Horse", desc: "Our team manages the full transaction, transport, and aftercare support." },
               ].map((item) => (
-                <div key={item.step} className="relative text-center lg:text-left">
-                  <div className="relative inline-flex w-20 h-20 rounded-full border-2 border-[#c9a84c]/30 items-center justify-center mb-4 mx-auto lg:mx-0 bg-[#0a1428]">
+                <div key={item.step} className="relative text-center">
+                  <div className="relative inline-flex w-20 h-20 rounded-full border-2 border-[#c9a84c]/30 items-center justify-center mb-4 mx-auto bg-[#0a1428]">
                     <span className="text-2xl font-bold text-[#c9a84c] font-[family-name:var(--font-playfair)]">
                       {item.step}
                     </span>
