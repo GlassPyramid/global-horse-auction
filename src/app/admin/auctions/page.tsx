@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Plus, Eye, Gavel } from "lucide-react";
+import { Plus, Eye, Gavel, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -70,6 +70,9 @@ export default async function AdminAuctionsPage() {
                   <div className="flex gap-2">
                     <Link href={`/auctions/${auction.id}`} className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/20 text-[#7a8fa8] hover:text-[#c9a84c] hover:border-[#c9a84c]/40 transition-all text-xs font-[family-name:var(--font-inter)] rounded-lg">
                       <Eye className="w-3.5 h-3.5" /> View
+                    </Link>
+                    <Link href={`/admin/auctions/${auction.id}/edit`} className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/20 text-[#7a8fa8] hover:text-[#c9a84c] hover:border-[#c9a84c]/40 transition-all text-xs font-[family-name:var(--font-inter)] rounded-lg">
+                      <Pencil className="w-3.5 h-3.5" /> Edit
                     </Link>
                   </div>
                 </div>

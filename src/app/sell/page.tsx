@@ -27,9 +27,18 @@ export default function SellPage() {
     askingPrice: "", description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    const res = await fetch("/api/sell", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name, email: form.email, phone: form.phone, country: form.country,
+        horse_name: form.horseName, breed: form.breed, age: form.age,
+        discipline: form.discipline, asking_price: form.askingPrice, description: form.description,
+      }),
+    });
+    if (res.ok) setSubmitted(true);
   };
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>

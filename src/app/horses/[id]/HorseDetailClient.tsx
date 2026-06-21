@@ -184,7 +184,9 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
                 </button>
               ))}
               {horse.videoUrl && (
-                <button className="relative w-20 h-16 rounded-lg overflow-hidden border-2 border-[#c9a84c]/15 hover:border-[#c9a84c]/40 transition-all bg-[#0a1428] flex items-center justify-center shrink-0">
+                <button
+                  onClick={() => { const el = document.getElementById("horse-video"); el?.scrollIntoView({ behavior: "smooth" }); }}
+                  className="relative w-20 h-16 rounded-lg overflow-hidden border-2 border-[#c9a84c]/40 transition-all bg-[#0a1428] flex items-center justify-center shrink-0 hover:border-[#c9a84c]">
                   <Play className="w-5 h-5 text-[#c9a84c]" />
                 </button>
               )}
@@ -217,6 +219,23 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
               <h2 className="text-lg font-bold text-white mb-4 font-[family-name:var(--font-playfair)]">About {horse.name}</h2>
               <p className="text-[#a8bfd4] leading-relaxed font-[family-name:var(--font-inter)] text-sm">{horse.description}</p>
             </div>
+
+            {horse.videoUrl && (
+              <div id="horse-video" className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#c9a84c]/10 flex items-center gap-2">
+                  <Play className="w-4 h-4 text-[#c9a84c]" />
+                  <h2 className="text-lg font-bold text-white font-[family-name:var(--font-playfair)]">Video</h2>
+                </div>
+                <div className="aspect-video">
+                  <iframe
+                    src={horse.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "www.youtube.com/embed/").replace("vimeo.com/", "player.vimeo.com/video/")}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 p-6">
               <h2 className="text-lg font-bold text-white mb-4 font-[family-name:var(--font-playfair)]">Transparency Guarantee</h2>
