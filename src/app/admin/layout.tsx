@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LayoutDashboard, Footprints, Gavel, Users, MessageSquare, TrendingUp, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Footprints, Gavel, Users, MessageSquare, TrendingUp, Settings } from "lucide-react";
+import { AdminSignOut } from "./AdminSignOut";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -14,7 +15,6 @@ const navItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#060c1d] flex">
-      {/* Sidebar */}
       <aside className="w-60 shrink-0 bg-[#040a18] border-r border-[#c9a84c]/10 flex flex-col pt-20">
         <div className="px-4 py-6 border-b border-[#c9a84c]/10">
           <div className="flex items-center gap-2">
@@ -42,14 +42,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs text-[#4a5a70] hover:text-[#7a8fa8] transition-all font-[family-name:var(--font-inter)]">
             ← Back to site
           </Link>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/70 hover:text-red-400 hover:bg-red-400/5 transition-all font-[family-name:var(--font-inter)]">
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
+          <AdminSignOut />
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 pt-20 overflow-auto">
         <div className="p-8">{children}</div>
       </div>
