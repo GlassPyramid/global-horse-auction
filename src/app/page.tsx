@@ -394,7 +394,7 @@ export default async function HomePage() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=1920&q=90"
+            src="https://images.unsplash.com/photo-1534773728080-33d31da27ae5?w=1920&q=90"
             alt="Elite sport horses"
             fill
             className="object-cover object-center opacity-30"
