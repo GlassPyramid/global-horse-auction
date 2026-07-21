@@ -3,38 +3,16 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, X, ChevronDown, User, LogOut, Heart, Gavel, LayoutDashboard, Shield } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut, Heart, Gavel, LayoutDashboard, Shield, PawPrint } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-
-const navLinks = [
-  {
-    label: "Auctions",
-    href: "/auctions",
-    children: [
-      { label: "Live Auctions", href: "/auctions?status=live" },
-      { label: "Upcoming Auctions", href: "/auctions?status=upcoming" },
-      { label: "Past Results", href: "/auctions?status=completed" },
-    ],
-  },
-  {
-    label: "Horses",
-    href: "/horses",
-    children: [
-      { label: "Future Stars", href: "/horses?category=FUTURE_STARS" },
-      { label: "Competition Ready", href: "/horses?category=COMPETITION_READY" },
-      { label: "Elite Sport", href: "/horses?category=ELITE_SPORT" },
-      { label: "Breeding & Investment", href: "/horses?category=BREEDING_INVESTMENT" },
-    ],
-  },
-  { label: "How It Works", href: "/how-it-works" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
 
 export function Navbar() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -42,6 +20,31 @@ export function Navbar() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [displayName, setDisplayName] = useState("");
+
+  const navLinks = [
+    {
+      label: t('nav', 'auctions'),
+      href: "/auctions",
+      children: [
+        { label: t('nav', 'liveAuctions'), href: "/auctions?status=live" },
+        { label: t('nav', 'upcomingAuctions'), href: "/auctions?status=upcoming" },
+        { label: t('nav', 'pastResults'), href: "/auctions?status=completed" },
+      ],
+    },
+    {
+      label: t('nav', 'horses'),
+      href: "/horses",
+      children: [
+        { label: t('nav', 'futureStars'), href: "/horses?category=FUTURE_STARS" },
+        { label: t('nav', 'competitionReady'), href: "/horses?category=COMPETITION_READY" },
+        { label: t('nav', 'eliteSport'), href: "/horses?category=ELITE_SPORT" },
+        { label: t('nav', 'breedingInvestment'), href: "/horses?category=BREEDING_INVESTMENT" },
+      ],
+    },
+    { label: t('nav', 'howItWorks'), href: "/how-it-works" },
+    { label: t('nav', 'about'), href: "/about" },
+    { label: t('nav', 'contact'), href: "/contact" },
+  ];
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -136,14 +139,21 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <div className="hidden lg:block">
+              <LanguageSwitcher />
+            </div>
+
             {user ? (
               <div className="hidden lg:flex items-center gap-3">
+                <Link href="/sell" className="px-4 py-2 text-xs font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
+                  {t('nav', 'sellPawPrint')}
+                </Link>
                 <Link href="/portal/watchlist" className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" aria-label="Watchlist">
                   <Heart className="w-5 h-5" />
                 </Link>
                 {isAdmin && (
                   <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-wider">
-                    <Shield className="w-3.5 h-3.5" /> Admin
+                    <Shield className="w-3.5 h-3.5" /> {t('nav', 'admin')}
                   </Link>
                 )}
                 <div className="relative">
@@ -158,13 +168,14 @@ export function Navbar() {
                     <div className="absolute top-full right-0 mt-2 w-56 bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl">
                       <div className="px-4 py-3 border-b border-[#c9a84c]/10">
                         <p className="text-sm font-semibold text-white font-[family-name:var(--font-inter)]">{displayName}</p>
-                        <p className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">{isAdmin ? "Admin" : "Bidder"}</p>
+                        <p className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">{isAdmin ? t('nav', 'admin') : "Bidder"}</p>
                       </div>
                       {[
-                        { href: "/portal", label: "My Portal", icon: <User className="w-4 h-4" /> },
-                        { href: "/portal/bids", label: "My Bids", icon: <Gavel className="w-4 h-4" /> },
-                        { href: "/portal/watchlist", label: "Watchlist", icon: <Heart className="w-4 h-4" /> },
-                        ...(isAdmin ? [{ href: "/admin", label: "Admin Panel", icon: <LayoutDashboard className="w-4 h-4" /> }] : []),
+                        { href: "/portal", label: t('nav', 'myPortal'), icon: <User className="w-4 h-4" /> },
+                        { href: "/portal/bids", label: t('nav', 'myBids'), icon: <Gavel className="w-4 h-4" /> },
+                        { href: "/portal/horses", label: t('nav', 'myPawPrints'), icon: <PawPrint className="w-4 h-4" /> },
+                        { href: "/portal/watchlist", label: t('nav', 'watchlist'), icon: <Heart className="w-4 h-4" /> },
+                        ...(isAdmin ? [{ href: "/admin", label: t('nav', 'adminPanel'), icon: <LayoutDashboard className="w-4 h-4" /> }] : []),
                       ].map((item) => (
                         <Link key={item.href} href={item.href} onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0">
@@ -174,7 +185,7 @@ export function Navbar() {
                       ))}
                       <button onClick={handleSignOut}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-400/5 transition-colors font-[family-name:var(--font-inter)]">
-                        <LogOut className="w-4 h-4" /> Sign Out
+                        <LogOut className="w-4 h-4" /> {t('nav', 'signOut')}
                       </button>
                     </div>
                   )}
@@ -183,10 +194,10 @@ export function Navbar() {
             ) : (
               <div className="hidden lg:flex items-center gap-3">
                 <Link href="/login" className="px-5 py-2 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wider uppercase">
-                  Sign In
+                  {t('nav', 'signIn')}
                 </Link>
                 <Link href="/register" className="px-5 py-2 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
-                  Register
+                  {t('nav', 'register')}
                 </Link>
               </div>
             )}
@@ -207,22 +218,25 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <div className="pt-3 pb-1">
+              <LanguageSwitcher />
+            </div>
             {user ? (
-              <div className="pt-4 flex gap-3">
+              <div className="pt-2 flex gap-3">
                 <Link href="/portal" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#c9a84c] rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
-                  My Portal
+                  {t('nav', 'myPortal')}
                 </Link>
                 <button onClick={handleSignOut} className="flex-1 text-center py-2.5 text-sm font-medium border border-red-400/30 text-red-400 rounded hover:bg-red-400/5 transition-all font-[family-name:var(--font-inter)]">
-                  Sign Out
+                  {t('nav', 'signOut')}
                 </button>
               </div>
             ) : (
-              <div className="pt-4 flex gap-3">
+              <div className="pt-2 flex gap-3">
                 <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#a8bfd4] rounded hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all font-[family-name:var(--font-inter)]">
-                  Sign In
+                  {t('nav', 'signIn')}
                 </Link>
                 <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
-                  Register
+                  {t('nav', 'register')}
                 </Link>
               </div>
             )}

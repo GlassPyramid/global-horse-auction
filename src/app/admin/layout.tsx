@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, Footprints, Gavel, Users, MessageSquare, TrendingUp, Settings } from "lucide-react";
+import { LayoutDashboard, Footprints, Gavel, Users, MessageSquare, TrendingUp, Settings, ClipboardList } from "lucide-react";
 import { AdminSignOut } from "./AdminSignOut";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/horses", label: "Horses", icon: Footprints },
+  { href: "/admin/submissions", label: "Submissions", icon: ClipboardList },
   { href: "/admin/auctions", label: "Auctions", icon: Gavel },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/bids", label: "All Bids", icon: TrendingUp },

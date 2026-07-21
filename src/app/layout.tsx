@@ -3,6 +3,8 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { Toaster } from "@/components/ui/toaster";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { getLang } from "@/lib/lang";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -40,20 +42,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLang();
   return (
     <html
-      lang="en"
+      lang={lang}
       className={`${playfair.variable} ${inter.variable} antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-screen flex flex-col bg-[#060c1d] text-[#f0ead8]">
-        <ConditionalLayout>{children}</ConditionalLayout>
-        <Toaster />
+        <LanguageProvider initial={lang}>
+          <ConditionalLayout>{children}</ConditionalLayout>
+          <Toaster />
+        </LanguageProvider>
       </body>
     </html>
   );
