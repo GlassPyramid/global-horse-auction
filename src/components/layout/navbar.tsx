@@ -146,7 +146,7 @@ export function Navbar() {
             {user ? (
               <div className="hidden lg:flex items-center gap-3">
                 <Link href="/sell" className="px-4 py-2 text-xs font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
-                  {t('nav', 'sellPawPrint')}
+                  {t('nav', 'sellHorse')}
                 </Link>
                 <Link href="/portal/watchlist" className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" aria-label="Watchlist">
                   <Heart className="w-5 h-5" />
@@ -173,7 +173,7 @@ export function Navbar() {
                       {[
                         { href: "/portal", label: t('nav', 'myPortal'), icon: <User className="w-4 h-4" /> },
                         { href: "/portal/bids", label: t('nav', 'myBids'), icon: <Gavel className="w-4 h-4" /> },
-                        { href: "/portal/horses", label: t('nav', 'myPawPrints'), icon: <PawPrint className="w-4 h-4" /> },
+                        { href: "/portal/horses", label: t('nav', 'myHorses'), icon: <PawPrint className="w-4 h-4" /> },
                         { href: "/portal/watchlist", label: t('nav', 'watchlist'), icon: <Heart className="w-4 h-4" /> },
                         ...(isAdmin ? [{ href: "/admin", label: t('nav', 'adminPanel'), icon: <LayoutDashboard className="w-4 h-4" /> }] : []),
                       ].map((item) => (

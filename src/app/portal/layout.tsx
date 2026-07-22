@@ -41,7 +41,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const navItems = [
     { href: "/portal", label: t('portal', 'dashboard'), icon: LayoutDashboard, exact: true },
     { href: "/portal/bids", label: t('portal', 'myBids'), icon: Gavel },
-    { href: "/portal/horses", label: t('portal', 'myPawPrints'), icon: PawPrint },
+    { href: "/portal/horses", label: t('portal', 'myHorses'), icon: PawPrint },
     { href: "/portal/watchlist", label: t('portal', 'watchlist'), icon: Heart },
     { href: "/portal/profile", label: t('portal', 'profile'), icon: User },
     { href: "/portal/settings", label: t('portal', 'settings'), icon: Settings },

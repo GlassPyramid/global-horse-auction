@@ -28,7 +28,7 @@ const statusConfig = {
   published: { icon: CheckCircle, color: "#8B5CF6", bg: "#8B5CF615" },
 };
 
-export default function MyPawPrintsPage() {
+export default function MyHorsesPage() {
   const { t } = useLanguage();
   const router = useRouter();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -63,7 +63,7 @@ export default function MyPawPrintsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)]">
-            {t('portal', 'myPawPrints')}
+            {t('portal', 'myHorses')}
           </h1>
           <p className="text-sm text-[#7a8fa8] mt-1 font-[family-name:var(--font-inter)]">
             {submissions.length} {submissions.length === 1 ? "submission" : "submissions"}
@@ -72,17 +72,17 @@ export default function MyPawPrintsPage() {
         <Link href="/sell"
           className="flex items-center gap-2 px-5 py-2.5 bg-[#c9a84c] text-[#060c1d] font-bold text-xs tracking-widest uppercase hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] rounded-xl">
           <Plus className="w-4 h-4" />
-          {t('portal', 'submitPawPrint')}
+          {t('portal', 'submitHorse')}
         </Link>
       </div>
 
       {submissions.length === 0 ? (
         <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 p-16 text-center">
           <PawPrint className="w-12 h-12 text-[#c9a84c]/30 mx-auto mb-4" />
-          <p className="text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-6">{t('portal', 'noPawPrints')}</p>
+          <p className="text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-6">{t('portal', 'noHorses')}</p>
           <Link href="/sell"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#c9a84c] text-[#060c1d] font-bold text-xs tracking-widest uppercase hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] rounded-xl">
-            <Plus className="w-4 h-4" /> {t('portal', 'submitPawPrint')}
+            <Plus className="w-4 h-4" /> {t('portal', 'submitHorse')}
           </Link>
         </div>
       ) : (
