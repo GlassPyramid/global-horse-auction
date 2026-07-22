@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -55,7 +56,7 @@ export function EditHorseForm({ horse, auctions }: { horse: Horse; auctions: Auc
   const handleSave = async () => {
     setState("loading");
     setError("");
-    const res = await fetch(`/api/admin/horses/${id}`, {
+    const res = await adminFetch(`/api/admin/horses/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -87,7 +88,7 @@ export function EditHorseForm({ horse, auctions }: { horse: Horse; auctions: Auc
 
   const handleDelete = async () => {
     if (!confirm(`Delete "${form.name}"? This cannot be undone.`)) return;
-    await fetch(`/api/admin/horses/${id}`, { method: "DELETE" });
+    await adminFetch(`/api/admin/horses/${id}`, { method: "DELETE" });
     router.push("/admin/horses");
   };
 

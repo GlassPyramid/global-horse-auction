@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState, useEffect, use } from "react";
@@ -44,7 +45,7 @@ export default function EditAuctionPage({ params }: { params: Promise<{ id: stri
     if (!form.title || !form.startDate || !form.endDate) { setError("Title, start and end date are required."); return; }
     setState("loading");
     setError("");
-    const res = await fetch(`/api/admin/auctions/${id}`, {
+    const res = await adminFetch(`/api/admin/auctions/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

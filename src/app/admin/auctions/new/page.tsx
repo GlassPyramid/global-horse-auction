@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -28,7 +29,7 @@ export default function NewAuctionPage() {
     }
     setState("loading");
     setError("");
-    const res = await fetch("/api/admin/auctions", {
+    const res = await adminFetch("/api/admin/auctions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

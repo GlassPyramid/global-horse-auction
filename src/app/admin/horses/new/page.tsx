@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -56,7 +57,7 @@ export default function AddHorsePage() {
     }
     setState("loading");
     setError("");
-    const res = await fetch("/api/admin/horses", {
+    const res = await adminFetch("/api/admin/horses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

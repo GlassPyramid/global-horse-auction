@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -19,7 +20,7 @@ export function AuctionActions({ auctionId, currentStatus }: { auctionId: string
 
   const update = async (status: string) => {
     setLoading(true);
-    await fetch(`/api/admin/auctions/${auctionId}`, {
+    await adminFetch(`/api/admin/auctions/${auctionId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -31,7 +32,7 @@ export function AuctionActions({ auctionId, currentStatus }: { auctionId: string
   const handleDelete = async () => {
     if (!confirm("Delete this auction? All associated horse lot assignments will be cleared.")) return;
     setLoading(true);
-    await fetch(`/api/admin/auctions/${auctionId}`, { method: "DELETE" });
+    await adminFetch(`/api/admin/auctions/${auctionId}`, { method: "DELETE" });
     router.refresh();
     setLoading(false);
   };

@@ -151,7 +151,25 @@ export default async function AdminSubmissionsPage({
 
                 {/* Actions */}
                 <div className="border-t border-[#c9a84c]/10 px-5 py-3">
-                  <SubmissionActions id={s.id} currentStatus={s.status} currentNotes={s.admin_notes ?? ""} />
+                  <SubmissionActions
+                  id={s.id}
+                  currentStatus={s.status}
+                  currentNotes={s.admin_notes ?? ""}
+                  submission={{
+                    name: s.name,
+                    breed: s.breed,
+                    age: s.age,
+                    gender: s.gender,
+                    color: s.color,
+                    height_cm: s.height_cm,
+                    category: s.category,
+                    discipline: s.discipline,
+                    description: s.description,
+                    asking_price: s.asking_price,
+                    sire: s.sire,
+                    dam: s.dam,
+                  }}
+                />
                 </div>
               </div>
             );

@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -11,7 +12,7 @@ export function AdminHorseActions({ horseId, horseName }: { horseId: string; hor
   const handleDelete = async () => {
     if (!confirm(`Delete "${horseName}"? This cannot be undone.`)) return;
     setDeleting(true);
-    await fetch(`/api/admin/horses/${horseId}`, { method: "DELETE" });
+    await adminFetch(`/api/admin/horses/${horseId}`, { method: "DELETE" });
     router.refresh();
     setDeleting(false);
   };

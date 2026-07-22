@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ export function AdminUserActions({ userId, verified, role }: { userId: string; v
 
   const update = async (body: object) => {
     setLoading(true);
-    await fetch(`/api/admin/users/${userId}`, {
+    await adminFetch(`/api/admin/users/${userId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

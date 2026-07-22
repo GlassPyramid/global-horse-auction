@@ -1,3 +1,4 @@
+import { adminFetch } from "@/lib/adminFetch";
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ export function AdminInquiryActions({ inquiryId, status }: { inquiryId: string; 
 
   const update = async (newStatus: string) => {
     setLoading(true);
-    await fetch(`/api/admin/inquiries/${inquiryId}`, {
+    await adminFetch(`/api/admin/inquiries/${inquiryId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
