@@ -7,16 +7,19 @@ import { mockAuctions, mockHorses } from "@/lib/mock-data";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { HorseCard } from "@/components/horses/horse-card";
 import { CountdownTimer } from "@/components/auctions/countdown-timer";
-
-const statusConfig = {
-  LIVE: { label: "Live Now", color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", dot: "bg-red-400" },
-  UPCOMING: { label: "Upcoming", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/30", dot: "bg-blue-400" },
-  COMPLETED: { label: "Completed", color: "text-[#7a8fa8]", bg: "bg-[#7a8fa8]/10 border-[#7a8fa8]/30", dot: "bg-[#7a8fa8]" },
-  CLOSED: { label: "Closed", color: "text-[#7a8fa8]", bg: "bg-[#7a8fa8]/10 border-[#7a8fa8]/30", dot: "bg-[#7a8fa8]" },
-};
+import { getLang } from "@/lib/lang";
+import { t } from "@/lib/i18n";
 
 export default async function AuctionsPage() {
+  const lang = await getLang();
   const supabase = await createClient();
+
+  const statusConfig = {
+    LIVE: { labelKey: "statusLive", color: "text-red-400", bg: "bg-red-400/10 border-red-400/30", dot: "bg-red-400" },
+    UPCOMING: { labelKey: "statusUpcoming", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/30", dot: "bg-blue-400" },
+    COMPLETED: { labelKey: "statusCompleted", color: "text-[#7a8fa8]", bg: "bg-[#7a8fa8]/10 border-[#7a8fa8]/30", dot: "bg-[#7a8fa8]" },
+    CLOSED: { labelKey: "statusClosed", color: "text-[#7a8fa8]", bg: "bg-[#7a8fa8]/10 border-[#7a8fa8]/30", dot: "bg-[#7a8fa8]" },
+  };
 
   const { data: rows } = await supabase
     .from("auctions")
@@ -38,13 +41,13 @@ export default async function AuctionsPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a1428] to-[#060c1d]" />
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-xs font-bold text-[#c9a84c] tracking-widest uppercase mb-4 font-[family-name:var(--font-inter)]" style={{ letterSpacing: "0.3em" }}>
-            Global Horse Auction
+            {t(lang, 'auctions', 'globalHorseAuction')}
           </p>
           <h1 className="text-5xl md:text-6xl font-bold text-white font-[family-name:var(--font-playfair)] mb-4">
-            Current Auctions
+            {t(lang, 'auctions', 'currentAuctions')}
           </h1>
           <p className="text-lg text-[#7a8fa8] font-[family-name:var(--font-inter)] max-w-xl">
-            Hand-selected exceptional horses available for bidding. Every horse is vet-checked, fully documented, and ready for its next chapter.
+            {t(lang, 'auctions', 'subtitle')}
           </p>
         </div>
       </section>
@@ -53,7 +56,7 @@ export default async function AuctionsPage() {
         <section className="py-16 max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-10">
             <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
-            <h2 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)]">Live Now</h2>
+            <h2 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)]">{t(lang, 'auctions', 'liveNow')}</h2>
           </div>
 
           {liveAuctions.map((auction) => {
@@ -69,18 +72,18 @@ export default async function AuctionsPage() {
                     <div className="px-10 py-8 max-w-lg">
                       <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold tracking-wider uppercase mb-4 font-[family-name:var(--font-inter)] ${cfg.bg} ${cfg.color}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} animate-pulse`} />
-                        {cfg.label}
+                        {t(lang, 'auctions', cfg.labelKey)}
                       </div>
                       <h3 className="text-3xl md:text-4xl font-bold text-white mb-3 font-[family-name:var(--font-playfair)]">{auction.title}</h3>
                       <p className="text-[#a8bfd4] text-sm leading-relaxed mb-6 font-[family-name:var(--font-inter)]">{auction.description}</p>
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
                         <div className="flex items-center gap-2 text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
                           <Clock className="w-4 h-4 text-[#c9a84c]" />
-                          Closes: {formatDate(auction.endDate)}
+                          {t(lang, 'auctions', 'closes')} {formatDate(auction.endDate)}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
                           <Gavel className="w-4 h-4 text-[#c9a84c]" />
-                          {auction.horses.length} Lots
+                          {auction.horses.length} {t(lang, 'auctions', 'lots')}
                         </div>
                       </div>
                       <CountdownTimer endDate={auction.endDate} />
@@ -98,11 +101,11 @@ export default async function AuctionsPage() {
                       </div>
                     ))}
                     {auction.horses.length > 3 && (
-                      <div className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">+{auction.horses.length - 3} more</div>
+                      <div className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">+{auction.horses.length - 3} {t(lang, 'auctions', 'more')}</div>
                     )}
                   </div>
                   <Link href={`/auctions/${auction.id}`} className="flex items-center gap-2 px-6 py-3 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-wider uppercase hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
-                    Enter Auction <ArrowRight className="w-4 h-4" />
+                    {t(lang, 'auctions', 'enterAuction')} <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -114,9 +117,9 @@ export default async function AuctionsPage() {
       <section className="py-8 max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)]">All Current Lots</h2>
+            <h2 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)]">{t(lang, 'auctions', 'allCurrentLots')}</h2>
             <p className="text-[#7a8fa8] text-sm mt-1 font-[family-name:var(--font-inter)]">
-              {liveHorses.length} horses available
+              {liveHorses.length} {t(lang, 'auctions', 'horsesAvailable')}
             </p>
           </div>
         </div>
@@ -129,7 +132,7 @@ export default async function AuctionsPage() {
 
       {upcomingAuctions.length > 0 && (
         <section className="py-16 max-w-7xl mx-auto px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)] mb-10">Upcoming Auctions</h2>
+          <h2 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)] mb-10">{t(lang, 'auctions', 'upcomingAuctions')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {upcomingAuctions.map((auction) => {
               const cfg = statusConfig[auction.status as keyof typeof statusConfig] ?? statusConfig.UPCOMING;
@@ -144,15 +147,15 @@ export default async function AuctionsPage() {
                   <div className="p-6">
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-bold tracking-wider uppercase mb-3 font-[family-name:var(--font-inter)] ${cfg.bg} ${cfg.color}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                      {cfg.label}
+                      {t(lang, 'auctions', cfg.labelKey)}
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2 font-[family-name:var(--font-playfair)]">{auction.title}</h3>
                     <div className="flex items-center gap-4 text-sm text-[#7a8fa8] mb-4 font-[family-name:var(--font-inter)]">
-                      <span>Opens: {formatDate(auction.startDate)}</span>
-                      <span>{auction.horses.length} Lots</span>
+                      <span>{t(lang, 'auctions', 'opens')} {formatDate(auction.startDate)}</span>
+                      <span>{auction.horses.length} {t(lang, 'auctions', 'lots')}</span>
                     </div>
                     <Link href={`/auctions/${auction.id}`} className="inline-flex items-center gap-2 text-sm text-[#c9a84c] hover:text-[#e2c97e] font-semibold tracking-wider uppercase transition-colors font-[family-name:var(--font-inter)] group-hover:gap-3">
-                      Preview Catalog <ArrowRight className="w-3.5 h-3.5" />
+                      {t(lang, 'auctions', 'previewCatalog')} <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>

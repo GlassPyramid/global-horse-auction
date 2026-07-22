@@ -1,68 +1,96 @@
 import Link from "next/link";
 import { Shield, Video, Gavel, Truck, HeartHandshake, CheckCircle, ArrowRight } from "lucide-react";
+import { getLang } from "@/lib/lang";
+import { t } from "@/lib/i18n";
 
-const steps = [
-  {
-    number: "01",
-    icon: Shield,
-    title: "Create & Verify Your Account",
-    description: "Register in under 2 minutes. Our team reviews and verifies every bidder within 24 hours. You'll need to provide valid ID for account approval — this ensures only serious buyers participate in our auctions.",
-    details: ["Free account creation", "ID verification required", "Approval within 24 hours", "Secure & confidential process"],
-  },
-  {
-    number: "02",
-    icon: Video,
-    title: "Browse & Research",
-    description: "Every horse in our catalog comes with professional photography, HD video footage, full vet check documentation, competition records, and complete bloodline certification. No surprises.",
-    details: ["HD video of every horse", "Full vet check reports", "Competition history archive", "Bloodline & passport certificates"],
-  },
-  {
-    number: "03",
-    icon: Gavel,
-    title: "Place Your Bids",
-    description: "Bid live in real-time from anywhere in the world. Set automatic maximum bids, receive outbid notifications via email and SMS, and watch the live bidding stream. Our platform handles bids from 60+ countries simultaneously.",
-    details: ["Live & online simultaneous bidding", "Automatic maximum bid setting", "Instant outbid notifications", "24/7 support during live auctions"],
-  },
-  {
-    number: "04",
-    icon: HeartHandshake,
-    title: "Win & Confirm",
-    description: "When you win, our team contacts you within 2 hours. You pay the hammer price — there is no buyer's premium added. Our 10% commission is charged to the seller only. Payment is due within 5 business days via bank transfer.",
-    details: ["No buyer's premium", "Payment within 5 business days", "Bank transfer or escrow", "Purchase contract provided"],
-  },
-  {
-    number: "05",
-    icon: Truck,
-    title: "Collection & Transport",
-    description: "We partner with Europe's leading equine transport specialists. Our team coordinates everything — health certificates, export documents, insurance, and door-to-door delivery to any country worldwide.",
-    details: ["Worldwide transport arranged", "Health & export certificates", "Insurance during transit", "Coordination with your yard"],
-  },
-];
+export default async function HowItWorksPage() {
+  const lang = await getLang();
 
-const faqs = [
-  { q: "Who can bid on Global Horse Auction?", a: "Anyone worldwide. You must be 18+ and complete our identity verification process. We accept bidders from 60+ countries." },
-  { q: "Is there a buyer's premium?", a: "No. You pay the hammer price only — no buyer's premium is added. Our 10% commission is charged exclusively to the seller. What you bid is exactly what you pay." },
-  { q: "Can I inspect the horse before the auction?", a: "Yes. We encourage pre-auction viewings at the seller's yard. Contact our team to arrange a visit. All vet checks are fully disclosed in advance." },
-  { q: "What payment methods do you accept?", a: "Bank transfer (SWIFT/SEPA) within 5 business days of winning. We also facilitate escrow arrangements for high-value lots on request." },
-  { q: "What happens if a horse fails a pre-purchase vet check?", a: "Our auction terms include provisions for failed PPE exams. Disputes are handled by our arbitration committee. All horses are sold subject to our standard conditions of sale." },
-  { q: "Can I sell my horse through Global Horse Auction?", a: "Yes. We accept applications from professional sellers, breeders, and serious amateurs. Contact us or use our Sell Your Horse inquiry form. We accept less than 20% of applications." },
-];
+  const steps = [
+    {
+      number: "01",
+      icon: Shield,
+      title: t(lang, 'howItWorks', 'step1title'),
+      description: t(lang, 'howItWorks', 'step1desc'),
+      details: [
+        t(lang, 'howItWorks', 'step1d1'),
+        t(lang, 'howItWorks', 'step1d2'),
+        t(lang, 'howItWorks', 'step1d3'),
+        t(lang, 'howItWorks', 'step1d4'),
+      ],
+    },
+    {
+      number: "02",
+      icon: Video,
+      title: t(lang, 'howItWorks', 'step2title'),
+      description: t(lang, 'howItWorks', 'step2desc'),
+      details: [
+        t(lang, 'howItWorks', 'step2d1'),
+        t(lang, 'howItWorks', 'step2d2'),
+        t(lang, 'howItWorks', 'step2d3'),
+        t(lang, 'howItWorks', 'step2d4'),
+      ],
+    },
+    {
+      number: "03",
+      icon: Gavel,
+      title: t(lang, 'howItWorks', 'step3title'),
+      description: t(lang, 'howItWorks', 'step3desc'),
+      details: [
+        t(lang, 'howItWorks', 'step3d1'),
+        t(lang, 'howItWorks', 'step3d2'),
+        t(lang, 'howItWorks', 'step3d3'),
+        t(lang, 'howItWorks', 'step3d4'),
+      ],
+    },
+    {
+      number: "04",
+      icon: HeartHandshake,
+      title: t(lang, 'howItWorks', 'step4title'),
+      description: t(lang, 'howItWorks', 'step4desc'),
+      details: [
+        t(lang, 'howItWorks', 'step4d1'),
+        t(lang, 'howItWorks', 'step4d2'),
+        t(lang, 'howItWorks', 'step4d3'),
+        t(lang, 'howItWorks', 'step4d4'),
+      ],
+    },
+    {
+      number: "05",
+      icon: Truck,
+      title: t(lang, 'howItWorks', 'step5title'),
+      description: t(lang, 'howItWorks', 'step5desc'),
+      details: [
+        t(lang, 'howItWorks', 'step5d1'),
+        t(lang, 'howItWorks', 'step5d2'),
+        t(lang, 'howItWorks', 'step5d3'),
+        t(lang, 'howItWorks', 'step5d4'),
+      ],
+    },
+  ];
 
-export default function HowItWorksPage() {
+  const faqs = [
+    { q: t(lang, 'howItWorks', 'faq1q'), a: t(lang, 'howItWorks', 'faq1a') },
+    { q: t(lang, 'howItWorks', 'faq2q'), a: t(lang, 'howItWorks', 'faq2a') },
+    { q: t(lang, 'howItWorks', 'faq3q'), a: t(lang, 'howItWorks', 'faq3a') },
+    { q: t(lang, 'howItWorks', 'faq4q'), a: t(lang, 'howItWorks', 'faq4a') },
+    { q: t(lang, 'howItWorks', 'faq5q'), a: t(lang, 'howItWorks', 'faq5a') },
+    { q: t(lang, 'howItWorks', 'faq6q'), a: t(lang, 'howItWorks', 'faq6a') },
+  ];
+
   return (
     <div className="min-h-screen bg-[#060c1d] pt-20">
       {/* Header */}
       <section className="py-20 bg-[#0a1428] border-b border-[#c9a84c]/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <p className="text-xs font-bold text-[#c9a84c] tracking-widest uppercase mb-4 font-[family-name:var(--font-inter)]" style={{ letterSpacing: "0.3em" }}>
-            The Process
+            {t(lang, 'howItWorks', 'theProcess')}
           </p>
           <h1 className="text-5xl md:text-6xl font-bold text-white font-[family-name:var(--font-playfair)] mb-4">
-            How It Works
+            {t(lang, 'howItWorks', 'title')}
           </h1>
           <p className="text-lg text-[#7a8fa8] max-w-xl mx-auto font-[family-name:var(--font-inter)]">
-            Transparent, professional, and designed for serious equestrians worldwide.
-            Our five-step process ensures every transaction is smooth and secure.
+            {t(lang, 'howItWorks', 'subtitle')}
           </p>
         </div>
       </section>
@@ -70,7 +98,7 @@ export default function HowItWorksPage() {
       {/* Steps */}
       <section className="py-24 max-w-7xl mx-auto px-6 lg:px-8">
         <div className="space-y-6">
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <div
               key={step.number}
               className="grid grid-cols-1 lg:grid-cols-5 gap-6 p-8 bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 hover:border-[#c9a84c]/25 transition-all group"
@@ -109,9 +137,9 @@ export default function HowItWorksPage() {
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-xs font-bold text-[#c9a84c] tracking-widest uppercase mb-3 font-[family-name:var(--font-inter)]" style={{ letterSpacing: "0.3em" }}>
-              Common Questions
+              {t(lang, 'howItWorks', 'commonQuestions')}
             </p>
-            <h2 className="text-4xl font-bold text-white font-[family-name:var(--font-playfair)]">FAQ</h2>
+            <h2 className="text-4xl font-bold text-white font-[family-name:var(--font-playfair)]">{t(lang, 'howItWorks', 'faq')}</h2>
           </div>
           <div className="space-y-4">
             {faqs.map((faq) => (
@@ -127,17 +155,17 @@ export default function HowItWorksPage() {
       {/* CTA */}
       <section className="py-20 text-center">
         <h2 className="text-4xl font-bold text-white font-[family-name:var(--font-playfair)] mb-4">
-          Ready to Start Bidding?
+          {t(lang, 'howItWorks', 'readyToBid')}
         </h2>
         <p className="text-[#7a8fa8] mb-8 font-[family-name:var(--font-inter)]">
-          Create your free account and join 12,000+ professionals.
+          {t(lang, 'howItWorks', 'ctaDesc')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/register" className="flex items-center gap-2 px-8 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)]">
-            Register Free <ArrowRight className="w-4 h-4" />
+            {t(lang, 'howItWorks', 'registerFree')} <ArrowRight className="w-4 h-4" />
           </Link>
           <Link href="/contact" className="px-8 py-4 border border-[#c9a84c]/40 text-[#c9a84c] font-semibold text-sm tracking-widest uppercase hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
-            Speak to a Specialist
+            {t(lang, 'howItWorks', 'speakToSpecialist')}
           </Link>
         </div>
       </section>

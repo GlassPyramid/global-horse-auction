@@ -5,9 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [showPw, setShowPw] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -45,10 +47,10 @@ export default function LoginPage() {
 
         <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/15 p-8">
           <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)] mb-2">
-            Welcome Back
+            {t('auth', 'welcomeBack')}
           </h1>
           <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-8">
-            Sign in to access your bidding portal.
+            {t('auth', 'signInToPortal')}
           </p>
 
           {error && (
@@ -60,7 +62,7 @@ export default function LoginPage() {
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="text-xs text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">
-                Email Address
+                {t('auth', 'email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#c9a84c]/60" />
@@ -77,7 +79,7 @@ export default function LoginPage() {
 
             <div>
               <label className="text-xs text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">
-                Password
+                {t('auth', 'password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#c9a84c]/60" />
@@ -99,7 +101,7 @@ export default function LoginPage() {
               </div>
               <div className="flex justify-end mt-1.5">
                 <Link href="/forgot-password" className="text-xs text-[#c9a84c] hover:text-[#e2c97e] transition-colors font-[family-name:var(--font-inter)]">
-                  Forgot password?
+                  {t('auth', 'forgotPassword')}
                 </Link>
               </div>
             </div>
@@ -109,15 +111,15 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full flex items-center justify-center gap-2 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Signing in..." : <><span>Sign In</span> <ArrowRight className="w-4 h-4" /></>}
+              {loading ? t('auth', 'signingIn') : <><span>{t('auth', 'signIn')}</span> <ArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-[#c9a84c]/10 text-center">
             <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-              New to Global Horse Auction?{" "}
+              {t('auth', 'newToGha')}{" "}
               <Link href="/register" className="text-[#c9a84c] hover:text-[#e2c97e] font-semibold transition-colors">
-                Create an Account
+                {t('auth', 'createAnAccount')}
               </Link>
             </p>
           </div>

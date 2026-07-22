@@ -5,19 +5,13 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { HorseCard } from "@/components/horses/horse-card";
 import { cn } from "@/lib/utils";
 import type { Horse } from "@/lib/types";
-
-const categories = [
-  { key: "", label: "All" },
-  { key: "FUTURE_STARS", label: "Future Stars" },
-  { key: "COMPETITION_READY", label: "Competition Ready" },
-  { key: "ELITE_SPORT", label: "Elite Sport" },
-  { key: "BREEDING_INVESTMENT", label: "Breeding & Investment" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const disciplines = ["All", "Dressage", "Show Jumping", "Eventing", "Breeding", "Working Equitation"];
 const genders = ["All", "STALLION", "MARE", "GELDING"];
 
 export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]; initialCategory?: string }) {
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(initialCategory);
   const [discipline, setDiscipline] = useState("All");
@@ -26,6 +20,14 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<"price_asc" | "price_desc" | "newest" | "name">("newest");
+
+  const categories = [
+    { key: "", label: t('horses', 'catAll') },
+    { key: "FUTURE_STARS", label: t('nav', 'futureStars') },
+    { key: "COMPETITION_READY", label: t('nav', 'competitionReady') },
+    { key: "ELITE_SPORT", label: t('nav', 'eliteSport') },
+    { key: "BREEDING_INVESTMENT", label: t('nav', 'breedingInvestment') },
+  ];
 
   const filtered = useMemo(() => {
     return horses
@@ -62,10 +64,10 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
       <section className="py-16 bg-[#0a1428] border-b border-[#c9a84c]/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-xs font-bold text-[#c9a84c] tracking-widest uppercase mb-3 font-[family-name:var(--font-inter)]" style={{ letterSpacing: "0.3em" }}>
-            Browse Collection
+            {t('horses', 'browseCollection')}
           </p>
           <h1 className="text-5xl font-bold text-white font-[family-name:var(--font-playfair)] mb-6">
-            All Horses
+            {t('horses', 'allHorses')}
           </h1>
 
           <div className="flex gap-3 max-w-2xl">
@@ -75,7 +77,7 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, breed, discipline..."
+                placeholder={t('horses', 'searchPlaceholder')}
                 className="w-full bg-[#060c1d] border border-[#c9a84c]/20 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#4a5a70]"
               />
             </div>
@@ -87,14 +89,14 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
               )}
             >
               <SlidersHorizontal className="w-4 h-4" />
-              Filters
+              {t('horses', 'filters')}
             </button>
             {hasFilters && (
               <button
                 onClick={clearFilters}
                 className="flex items-center gap-1.5 px-4 py-3 rounded-xl border border-red-400/30 text-red-400 hover:bg-red-400/5 text-sm font-semibold transition-all font-[family-name:var(--font-inter)]"
               >
-                <X className="w-4 h-4" /> Clear
+                <X className="w-4 h-4" /> {t('horses', 'clear')}
               </button>
             )}
           </div>
@@ -119,33 +121,33 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
           {showFilters && (
             <div className="mt-5 p-5 bg-[#060c1d] rounded-xl border border-[#c9a84c]/10 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Discipline</label>
+                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">{t('horses', 'discipline')}</label>
                 <select value={discipline} onChange={(e) => setDiscipline(e.target.value)}
                   className="w-full bg-[#0a1428] border border-[#c9a84c]/20 rounded-lg px-3 py-2 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c]">
                   {disciplines.map((d) => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Gender</label>
+                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">{t('horses', 'gender')}</label>
                 <select value={gender} onChange={(e) => setGender(e.target.value)}
                   className="w-full bg-[#0a1428] border border-[#c9a84c]/20 rounded-lg px-3 py-2 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c]">
-                  {genders.map((g) => <option key={g} value={g}>{g === "All" ? "All" : g.charAt(0) + g.slice(1).toLowerCase()}</option>)}
+                  {genders.map((g) => <option key={g} value={g}>{g === "All" ? t('horses', 'catAll') : g.charAt(0) + g.slice(1).toLowerCase()}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Min Price (€)</label>
+                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">{t('horses', 'minPrice')}</label>
                 <input type="number" value={minPrice} onChange={(e) => setMinPrice(Number(e.target.value))}
                   min={0} step={5000}
                   className="w-full bg-[#0a1428] border border-[#c9a84c]/20 rounded-lg px-3 py-2 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c]" />
               </div>
               <div>
-                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">Sort By</label>
+                <label className="text-[10px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-2 block">{t('horses', 'sortBy')}</label>
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                   className="w-full bg-[#0a1428] border border-[#c9a84c]/20 rounded-lg px-3 py-2 text-sm text-white font-[family-name:var(--font-inter)] focus:outline-none focus:border-[#c9a84c]">
-                  <option value="newest">Newest First</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="name">Alphabetical</option>
+                  <option value="newest">{t('horses', 'newest')}</option>
+                  <option value="price_asc">{t('horses', 'priceAsc')}</option>
+                  <option value="price_desc">{t('horses', 'priceDesc')}</option>
+                  <option value="name">{t('horses', 'alphabetical')}</option>
                 </select>
               </div>
             </div>
@@ -156,15 +158,15 @@ export function HorsesClient({ horses, initialCategory = "" }: { horses: Horse[]
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-8">
           <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-            <span className="text-white font-semibold">{filtered.length}</span> horses found
+            <span className="text-white font-semibold">{filtered.length}</span> {t('horses', 'horsesFound')}
           </p>
         </div>
 
         {filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-[#7a8fa8] text-lg font-[family-name:var(--font-inter)]">No horses match your criteria.</p>
+            <p className="text-[#7a8fa8] text-lg font-[family-name:var(--font-inter)]">{t('horses', 'noMatch')}</p>
             <button onClick={clearFilters} className="mt-4 text-[#c9a84c] hover:underline text-sm font-[family-name:var(--font-inter)]">
-              Clear all filters
+              {t('horses', 'clearFilters')}
             </button>
           </div>
         ) : (

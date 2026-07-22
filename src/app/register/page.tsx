@@ -5,11 +5,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, User, Mail, Lock, Phone, Globe, ArrowRight, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-
-const steps = ["Account", "Personal", "Verify"];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const steps = [t('auth', 'account'), t('auth', 'personal'), t('auth', 'verify')];
+
   const [step, setStep] = useState(0);
   const [showPw, setShowPw] = useState(false);
   const [form, setForm] = useState({
@@ -28,16 +30,16 @@ export default function RegisterPage() {
     setError("");
 
     if (step === 0) {
-      if (!form.email || !form.password) return setError("Email and password are required.");
-      if (form.password.length < 8) return setError("Password must be at least 8 characters.");
-      if (form.password !== form.confirmPassword) return setError("Passwords do not match.");
+      if (!form.email || !form.password) return setError(t('auth', 'emailRequired'));
+      if (form.password.length < 8) return setError(t('auth', 'passwordTooShort'));
+      if (form.password !== form.confirmPassword) return setError(t('auth', 'passwordMismatch'));
       setStep(1);
       return;
     }
 
     if (step === 1) {
-      if (!form.name) return setError("Full name is required.");
-      if (!form.agreeTerms) return setError("You must agree to the terms.");
+      if (!form.name) return setError(t('auth', 'nameRequired'));
+      if (!form.agreeTerms) return setError(t('auth', 'agreeRequired'));
       setLoading(true);
       const supabase = createClient();
       const { error } = await supabase.auth.signUp({
@@ -105,13 +107,13 @@ export default function RegisterPage() {
           {step === 0 && (
             <>
               <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)] mb-2">
-                Create Your Account
+                {t('auth', 'createAccount')}
               </h1>
               <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-8">
-                Join 12,000+ professionals who trust Global Horse Auction.
+                {t('auth', 'join')}
               </p>
               <div className="space-y-5">
-                <Field label="Email Address" icon={Mail}>
+                <Field label={t('auth', 'email')} icon={Mail}>
                   <input
                     type="email"
                     value={form.email}
@@ -120,12 +122,12 @@ export default function RegisterPage() {
                     className={inputClass}
                   />
                 </Field>
-                <Field label="Password" icon={Lock}>
+                <Field label={t('auth', 'password')} icon={Lock}>
                   <input
                     type={showPw ? "text" : "password"}
                     value={form.password}
                     onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                    placeholder="Minimum 8 characters"
+                    placeholder={t('auth', 'minChars')}
                     className={inputClass}
                   />
                   <button
@@ -136,12 +138,12 @@ export default function RegisterPage() {
                     {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </Field>
-                <Field label="Confirm Password" icon={Lock}>
+                <Field label={t('auth', 'confirmPassword')} icon={Lock}>
                   <input
                     type="password"
                     value={form.confirmPassword}
                     onChange={(e) => setForm((f) => ({ ...f, confirmPassword: e.target.value }))}
-                    placeholder="Repeat password"
+                    placeholder={t('auth', 'repeatPassword')}
                     className={inputClass}
                   />
                 </Field>
@@ -152,22 +154,22 @@ export default function RegisterPage() {
           {step === 1 && (
             <>
               <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)] mb-2">
-                Personal Details
+                {t('auth', 'personalDetails')}
               </h1>
               <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-8">
-                Required for account verification and bid notifications.
+                {t('auth', 'personalDetailsDesc')}
               </p>
               <div className="space-y-5">
-                <Field label="Full Name" icon={User}>
+                <Field label={t('auth', 'fullName')} icon={User}>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                    placeholder="Your full legal name"
+                    placeholder={t('auth', 'fullNamePlaceholder')}
                     className={inputClass}
                   />
                 </Field>
-                <Field label="Phone Number" icon={Phone}>
+                <Field label={t('auth', 'phone')} icon={Phone}>
                   <input
                     type="tel"
                     value={form.phone}
@@ -176,12 +178,12 @@ export default function RegisterPage() {
                     className={inputClass}
                   />
                 </Field>
-                <Field label="Country" icon={Globe}>
+                <Field label={t('auth', 'country')} icon={Globe}>
                   <input
                     type="text"
                     value={form.country}
                     onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                    placeholder="Your country of residence"
+                    placeholder={t('auth', 'countryPlaceholder')}
                     className={inputClass}
                   />
                 </Field>
@@ -193,10 +195,10 @@ export default function RegisterPage() {
                     className="mt-0.5 accent-[#c9a84c]"
                   />
                   <span className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-                    I agree to the{" "}
-                    <Link href="/terms" className="text-[#c9a84c] hover:underline">Terms & Conditions</Link>
-                    {" "}and{" "}
-                    <Link href="/privacy" className="text-[#c9a84c] hover:underline">Privacy Policy</Link>
+                    {t('auth', 'agreeTermsPre')}
+                    <Link href="/terms" className="text-[#c9a84c] hover:underline">{t('footer', 'termsConditions')}</Link>
+                    {t('auth', 'agreeTermsMid')}
+                    <Link href="/privacy" className="text-[#c9a84c] hover:underline">{t('footer', 'privacyPolicy')}</Link>
                   </span>
                 </label>
               </div>
@@ -209,17 +211,17 @@ export default function RegisterPage() {
                 <CheckCircle className="w-8 h-8 text-[#c9a84c]" />
               </div>
               <h1 className="text-2xl font-bold text-white font-[family-name:var(--font-playfair)] mb-3">
-                Account Created!
+                {t('auth', 'accountCreated')}
               </h1>
               <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)] mb-8">
-                Welcome to Global Horse Auction. We&apos;ve sent a verification email to{" "}
+                {t('auth', 'verifyEmailSent')}{" "}
                 <span className="text-[#c9a84c]">{form.email}</span>.
               </p>
               <button
                 onClick={() => router.push("/portal")}
                 className="inline-flex items-center gap-2 px-8 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl"
               >
-                Go to My Portal <ArrowRight className="w-4 h-4" />
+                {t('auth', 'goToPortal')} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -230,16 +232,16 @@ export default function RegisterPage() {
               disabled={loading}
               className="mt-8 w-full flex items-center justify-center gap-2 py-4 bg-[#c9a84c] text-[#060c1d] font-bold text-sm tracking-widest uppercase hover:bg-[#e2c97e] transition-all glow-gold font-[family-name:var(--font-inter)] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : <><span>{step === 0 ? "Continue" : "Create Account"}</span> <ArrowRight className="w-4 h-4" /></>}
+              {loading ? t('auth', 'creatingAccount') : <><span>{step === 0 ? t('auth', 'continue') : t('auth', 'createAccountBtn')}</span> <ArrowRight className="w-4 h-4" /></>}
             </button>
           )}
 
           {step === 0 && (
             <div className="mt-6 pt-6 border-t border-[#c9a84c]/10 text-center">
               <p className="text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-                Already have an account?{" "}
+                {t('auth', 'alreadyHaveAccount')}{" "}
                 <Link href="/login" className="text-[#c9a84c] hover:text-[#e2c97e] font-semibold transition-colors">
-                  Sign In
+                  {t('auth', 'signIn')}
                 </Link>
               </p>
             </div>

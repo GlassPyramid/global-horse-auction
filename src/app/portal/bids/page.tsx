@@ -5,8 +5,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, formatDateTime, categoryLabel, categoryClass } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { getLang } from "@/lib/lang";
+import { t } from "@/lib/i18n";
 
 export default async function MyBidsPage() {
+  const lang = await getLang();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?redirectTo=/portal/bids");
@@ -21,25 +24,27 @@ export default async function MyBidsPage() {
   const leading = bids?.filter((b) => Number(b.amount) >= Number((b.horses as unknown as { current_price: number })?.current_price)).length ?? 0;
   const outbid = (bids?.length ?? 0) - leading;
 
+  const stats = [
+    { label: t(lang, 'portal', 'statTotalBids'), value: bids?.length ?? 0 },
+    { label: t(lang, 'portal', 'statLeading'), value: leading },
+    { label: t(lang, 'portal', 'statOutbid'), value: outbid },
+    { label: t(lang, 'portal', 'statValue'), value: formatCurrency(totalValue) },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
         <p className="text-xs font-bold text-[#c9a84c] tracking-widest uppercase mb-1 font-[family-name:var(--font-inter)]" style={{ letterSpacing: "0.2em" }}>
-          Client Portal
+          {t(lang, 'portal', 'clientPortal')}
         </p>
-        <h1 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)]">My Bids</h1>
+        <h1 className="text-3xl font-bold text-white font-[family-name:var(--font-playfair)]">{t(lang, 'portal', 'myBids')}</h1>
         <p className="text-[#7a8fa8] text-sm mt-1 font-[family-name:var(--font-inter)]">
-          Your complete bidding history across all Global Horse Auction events.
+          {t(lang, 'portal', 'myBidsSubtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { label: "Total Bids", value: bids?.length ?? 0 },
-          { label: "Leading", value: leading },
-          { label: "Outbid", value: outbid },
-          { label: "Value", value: formatCurrency(totalValue) },
-        ].map((stat) => (
+        {stats.map((stat) => (
           <div key={stat.label} className="bg-[#0a1428] rounded-xl border border-[#c9a84c]/10 p-4">
             <div className="text-xl font-bold text-[#c9a84c] font-[family-name:var(--font-playfair)]">{stat.value}</div>
             <div className="text-xs text-[#4a5a70] uppercase tracking-wider font-[family-name:var(--font-inter)] mt-1">{stat.label}</div>
@@ -50,15 +55,15 @@ export default async function MyBidsPage() {
       <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 overflow-hidden">
         <div className="px-6 py-4 border-b border-[#c9a84c]/10 flex items-center gap-2">
           <Gavel className="w-4 h-4 text-[#c9a84c]" />
-          <h2 className="font-bold text-white font-[family-name:var(--font-inter)] text-sm">All Bids</h2>
+          <h2 className="font-bold text-white font-[family-name:var(--font-inter)] text-sm">{t(lang, 'portal', 'allBids')}</h2>
         </div>
 
         {!bids || bids.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <Gavel className="w-10 h-10 text-[#c9a84c]/30 mx-auto mb-4" />
-            <p className="text-white font-bold mb-2 font-[family-name:var(--font-playfair)]">No bids yet</p>
-            <p className="text-[#7a8fa8] text-sm mb-4 font-[family-name:var(--font-inter)]">Start bidding on our exceptional horses.</p>
-            <Link href="/auctions" className="text-[#c9a84c] hover:underline text-sm font-[family-name:var(--font-inter)]">Browse Auctions →</Link>
+            <p className="text-white font-bold mb-2 font-[family-name:var(--font-playfair)]">{t(lang, 'portal', 'noBidsYet')}</p>
+            <p className="text-[#7a8fa8] text-sm mb-4 font-[family-name:var(--font-inter)]">{t(lang, 'portal', 'noBidsDesc')}</p>
+            <Link href="/auctions" className="text-[#c9a84c] hover:underline text-sm font-[family-name:var(--font-inter)]">{t(lang, 'portal', 'browseAuctionsLink')}</Link>
           </div>
         ) : (
           <div className="divide-y divide-[#c9a84c]/8">
@@ -92,7 +97,7 @@ export default async function MyBidsPage() {
                     <div className={cn("flex items-center gap-1 text-xs justify-end mt-0.5", isLeading ? "text-green-400" : "text-red-400")}>
                       {isLeading ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                       <span className="font-[family-name:var(--font-inter)] font-semibold">
-                        {isLeading ? "Leading Bid" : horse ? `Outbid — Current: ${formatCurrency(Number(horse.current_price), horse.currency)}` : "Outbid"}
+                        {isLeading ? t(lang, 'portal', 'leadingBid') : horse ? `${t(lang, 'portal', 'outbidCurrent')} ${formatCurrency(Number(horse.current_price), horse.currency)}` : t(lang, 'portal', 'outbid')}
                       </span>
                     </div>
                   </div>
