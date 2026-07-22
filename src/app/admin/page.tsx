@@ -32,7 +32,7 @@ export default async function AdminDashboard() {
 
   const kpis = [
     { icon: Gavel, label: "Total Bids", value: (totalBids ?? 0).toString(), sub: "Across all auctions", color: "text-[#c9a84c]" },
-    { icon: TrendingUp, label: "Est. Revenue", value: formatCurrency(estRevenue), sub: "10% buyer's premium", color: "text-green-400" },
+    { icon: TrendingUp, label: "Est. Revenue", value: formatCurrency(estRevenue), sub: "10% seller commission", color: "text-green-400" },
     { icon: Footprints, label: "Active Lots", value: (totalHorses ?? 0).toString(), sub: `${liveAuctions?.length ?? 0} auction live`, color: "text-blue-400" },
     { icon: Users, label: "Registered Users", value: (totalUsers ?? 0).toString(), sub: "Total profiles", color: "text-purple-400" },
   ];

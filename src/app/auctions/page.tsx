@@ -26,13 +26,7 @@ export default async function AuctionsPage() {
   const auctions =
     rows && rows.length > 0
       ? rows.map((a) => toAuction(a as unknown as DbAuction))
-      : mockAuctions.map((a) => ({
-          ...a,
-          startDate: a.startDate,
-          endDate: a.endDate,
-          coverImage: a.coverImage,
-          horses: a.horses,
-        }));
+      : mockAuctions.map((a) => ({ ...a, startDate: a.startDate, endDate: a.endDate, coverImage: a.coverImage, horses: a.horses }));
 
   const liveAuctions = auctions.filter((a) => a.status === "LIVE");
   const upcomingAuctions = auctions.filter((a) => a.status === "UPCOMING");

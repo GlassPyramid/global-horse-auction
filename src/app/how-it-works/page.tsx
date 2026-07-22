@@ -27,8 +27,8 @@ const steps = [
     number: "04",
     icon: HeartHandshake,
     title: "Win & Confirm",
-    description: "When you win, our team contacts you within 2 hours. A buyer's premium of 10% (+ VAT where applicable) is added to the hammer price. Payment is due within 5 business days via bank transfer.",
-    details: ["10% buyer's premium", "Payment within 5 business days", "Bank transfer or escrow", "Purchase contract provided"],
+    description: "When you win, our team contacts you within 2 hours. You pay the hammer price — there is no buyer's premium added. Our 10% commission is charged to the seller only. Payment is due within 5 business days via bank transfer.",
+    details: ["No buyer's premium", "Payment within 5 business days", "Bank transfer or escrow", "Purchase contract provided"],
   },
   {
     number: "05",
@@ -41,7 +41,7 @@ const steps = [
 
 const faqs = [
   { q: "Who can bid on Global Horse Auction?", a: "Anyone worldwide. You must be 18+ and complete our identity verification process. We accept bidders from 60+ countries." },
-  { q: "What is the buyer's premium?", a: "A 10% buyer's premium is added to the hammer price. VAT is applied where required by law. This is standard practice across the industry." },
+  { q: "Is there a buyer's premium?", a: "No. You pay the hammer price only — no buyer's premium is added. Our 10% commission is charged exclusively to the seller. What you bid is exactly what you pay." },
   { q: "Can I inspect the horse before the auction?", a: "Yes. We encourage pre-auction viewings at the seller's yard. Contact our team to arrange a visit. All vet checks are fully disclosed in advance." },
   { q: "What payment methods do you accept?", a: "Bank transfer (SWIFT/SEPA) within 5 business days of winning. We also facilitate escrow arrangements for high-value lots on request." },
   { q: "What happens if a horse fails a pre-purchase vet check?", a: "Our auction terms include provisions for failed PPE exams. Disputes are handled by our arbitration committee. All horses are sold subject to our standard conditions of sale." },

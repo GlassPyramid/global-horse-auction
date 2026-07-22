@@ -64,7 +64,7 @@ const en = {
             "Sellers may not withdraw a horse from auction after the auction has gone live without the written consent of Global Horse Auction",
           ],
         },
-        "A commission of 5% of the final hammer price is payable to Global Horse Auction upon successful sale. This will be deducted from the sale proceeds before payment is transferred to the seller.",
+        "A commission of 10% of the final hammer price is payable to Global Horse Auction upon successful sale. This will be deducted from the sale proceeds before payment is transferred to the seller. If the horse does not sell, a cost contribution of €500 is due to cover marketing, photography, and platform costs.",
       ],
     },
     {
@@ -185,7 +185,7 @@ const nl = {
             "Verkopers mogen een paard niet terugtrekken uit een lopende veiling zonder schriftelijke toestemming van Global Horse Auction",
           ],
         },
-        "Een commissie van 5% van de definitieve hammerprijs is verschuldigd aan Global Horse Auction bij een succesvolle verkoop. Dit wordt in mindering gebracht op de verkoopopbrengst voordat de betaling aan de verkoper wordt overgemaakt.",
+        "Een commissie van 10% van de definitieve hammerprijs is verschuldigd aan Global Horse Auction bij een succesvolle verkoop. Dit wordt in mindering gebracht op de verkoopopbrengst voordat de betaling aan de verkoper wordt overgemaakt. Wordt het paard niet verkocht, dan is een kostenbijdrage van €500 verschuldigd ter dekking van marketing-, fotografie- en platformkosten.",
       ],
     },
     {
