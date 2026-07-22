@@ -251,7 +251,19 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
             {(horse.sire || horse.dam) && (
               <div className="bg-[#0a1428] rounded-2xl border border-[#c9a84c]/10 p-7">
                 <h2 className="text-xl font-bold text-white font-[family-name:var(--font-playfair)] mb-6">{t('horseDetail', 'pedigree')}</h2>
-                <div className="relative">
+                {/* Mobile: stacked list; Desktop: tree layout */}
+                <div className="sm:hidden space-y-3">
+                  {[
+                    { label: t('horseDetail', 'sireFather'), value: horse.sire },
+                    { label: t('horseDetail', 'damMother'), value: horse.dam },
+                  ].map(({ label, value }) => (
+                    <div key={label} className={`rounded-xl border p-4 ${value ? "border-[#c9a84c]/20 bg-[#060c1d]" : "border-[#c9a84c]/10 bg-[#060c1d]/40"}`}>
+                      <div className="text-[9px] text-[#c9a84c] uppercase tracking-widest font-[family-name:var(--font-inter)] mb-1">{label}</div>
+                      <div className="text-sm font-bold text-white font-[family-name:var(--font-inter)]">{value ?? t('horseDetail', 'notRecorded')}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hidden sm:block">
                   <div className="flex items-stretch gap-0">
                     <div className="flex flex-col justify-center w-1/3 pr-4">
                       <div className="rounded-xl border-2 border-[#c9a84c]/40 bg-[#060c1d] p-4 text-center">
@@ -260,7 +272,6 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
                         <div className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)] mt-0.5">{genderLabel[horse.gender]}</div>
                       </div>
                     </div>
-
                     <div className="flex flex-col justify-center relative w-8 shrink-0">
                       <div className="absolute top-1/4 bottom-1/4 left-0 right-0 flex flex-col justify-between">
                         <div className="h-px bg-[#c9a84c]/30 w-full" style={{ marginTop: "25%" }} />
@@ -268,7 +279,6 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
                       </div>
                       <div className="absolute top-1/4 bottom-1/4 left-1/2 w-px bg-[#c9a84c]/30" />
                     </div>
-
                     <div className="flex flex-col justify-between flex-1 py-2 gap-4">
                       {horse.sire ? (
                         <div className="rounded-xl border border-[#c9a84c]/20 bg-[#060c1d] p-4">
@@ -293,25 +303,19 @@ export function HorseDetailClient({ horse, auction, isAuthenticated }: Props) {
                         </div>
                       )}
                     </div>
-
                     <div className="flex flex-col justify-between relative w-8 shrink-0 py-2 gap-4">
-                      <div className="flex items-center h-full">
-                        <div className="w-full h-px bg-[#c9a84c]/20" />
-                      </div>
-                      <div className="flex items-center h-full">
-                        <div className="w-full h-px bg-[#c9a84c]/20" />
-                      </div>
+                      <div className="flex items-center h-full"><div className="w-full h-px bg-[#c9a84c]/20" /></div>
+                      <div className="flex items-center h-full"><div className="w-full h-px bg-[#c9a84c]/20" /></div>
                     </div>
-
                     <div className="flex flex-col justify-between flex-1 py-2 gap-2">
                       {[
-                        { role: t('horseDetail', 'paternalGrandsire'), note: t('horseDetail', 'sireFather').split(' ')[0] },
-                        { role: t('horseDetail', 'paternalGranddam'), note: t('horseDetail', 'damMother').split(' ')[0] },
-                        { role: t('horseDetail', 'maternalGrandsire'), note: t('horseDetail', 'sireFather').split(' ')[0] },
-                        { role: t('horseDetail', 'maternalGranddam'), note: t('horseDetail', 'damMother').split(' ')[0] },
-                      ].map(gp => (
-                        <div key={gp.role} className="rounded-lg border border-[#c9a84c]/8 bg-[#060c1d]/30 px-3 py-2.5">
-                          <div className="text-[8px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)]">{gp.role}</div>
+                        t('horseDetail', 'paternalGrandsire'),
+                        t('horseDetail', 'paternalGranddam'),
+                        t('horseDetail', 'maternalGrandsire'),
+                        t('horseDetail', 'maternalGranddam'),
+                      ].map(role => (
+                        <div key={role} className="rounded-lg border border-[#c9a84c]/8 bg-[#060c1d]/30 px-3 py-2.5">
+                          <div className="text-[8px] text-[#4a5a70] uppercase tracking-widest font-[family-name:var(--font-inter)]">{role}</div>
                           <div className="text-[10px] text-[#4a5a70] font-[family-name:var(--font-inter)] mt-0.5">—</div>
                         </div>
                       ))}

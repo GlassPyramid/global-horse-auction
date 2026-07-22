@@ -97,7 +97,8 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center h-20 gap-4">
+        <div className="flex items-center h-20">
+          {/* Logo — fixed width so it never shifts */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
             <GHALogo />
             <div className="hidden sm:block">
@@ -110,24 +111,28 @@ export function Navbar() {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex flex-1 justify-center items-center gap-0.5">
+          {/* Desktop nav — only at xl+ (1280px) where NL text has room */}
+          <nav className="hidden xl:flex flex-1 justify-center items-center gap-1">
             {navLinks.map((link) => (
               <div key={link.label} className="relative"
                 onMouseEnter={() => link.children && setOpenDropdown(link.label)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <Link href={link.href}
-                  className={cn("flex items-center gap-1 px-3 py-2 text-[11px] tracking-wide font-[family-name:var(--font-inter)] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200 uppercase whitespace-nowrap", openDropdown === link.label && "text-[#c9a84c]")}
+                  className={cn(
+                    "flex items-center gap-1 px-4 py-2 text-sm font-medium tracking-wide text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200 uppercase whitespace-nowrap font-[family-name:var(--font-inter)]",
+                    openDropdown === link.label && "text-[#c9a84c]"
+                  )}
                 >
                   {link.label}
                   {link.children && <ChevronDown className={cn("w-3 h-3 transition-transform shrink-0", openDropdown === link.label && "rotate-180")} />}
                 </Link>
                 {link.children && openDropdown === link.label && (
-                  <div className="absolute top-full left-0 pt-2">
+                  <div className="absolute top-full left-0 pt-2 z-50">
                     <div className="bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl min-w-52">
                       {link.children.map((child) => (
                         <Link key={child.href} href={child.href}
-                          className="block px-5 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0">
+                          className="block px-5 py-3 text-sm text-[#a8bfd4] hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 transition-colors font-[family-name:var(--font-inter)] border-b border-[#c9a84c]/10 last:border-0 whitespace-nowrap">
                           {child.label}
                         </Link>
                       ))}
@@ -138,21 +143,24 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
-            <div className="hidden lg:block">
+          {/* Right side — shrink-0 so language switch never pushes nav */}
+          <div className="flex items-center gap-3 ml-auto shrink-0">
+            <div className="hidden xl:block">
               <LanguageSwitcher />
             </div>
 
             {user ? (
-              <div className="hidden lg:flex items-center gap-2">
-                <Link href="/sell" className="px-3 py-1.5 text-[11px] font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
+              <div className="hidden xl:flex items-center gap-2">
+                <Link href="/sell"
+                  className="px-4 py-2 text-xs font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-wide uppercase whitespace-nowrap">
                   {t('nav', 'sellHorse')}
                 </Link>
                 <Link href="/portal/watchlist" className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" aria-label="Watchlist">
                   <Heart className="w-5 h-5" />
                 </Link>
                 {isAdmin && (
-                  <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/30 text-[#c9a84c] text-[11px] font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-normal">
+                  <Link href="/admin"
+                    className="flex items-center gap-1.5 px-3 py-2 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-wide">
                     <Shield className="w-3.5 h-3.5" /> {t('nav', 'admin')}
                   </Link>
                 )}
@@ -165,7 +173,7 @@ export function Navbar() {
                     <ChevronDown className={cn("w-3 h-3 text-[#c9a84c] transition-transform", userMenuOpen && "rotate-180")} />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl">
+                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#0a1428]/98 backdrop-blur-md border border-[#c9a84c]/20 rounded-lg overflow-hidden shadow-2xl z-50">
                       <div className="px-4 py-3 border-b border-[#c9a84c]/10">
                         <p className="text-sm font-semibold text-white font-[family-name:var(--font-inter)]">{displayName}</p>
                         <p className="text-xs text-[#7a8fa8] font-[family-name:var(--font-inter)]">{isAdmin ? t('nav', 'admin') : "Bidder"}</p>
@@ -192,50 +200,77 @@ export function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center gap-2">
-                <Link href="/login" className="px-3 py-1.5 text-[11px] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
+              <div className="hidden xl:flex items-center gap-3">
+                <Link href="/login"
+                  className="px-4 py-2 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wide uppercase whitespace-nowrap">
                   {t('nav', 'signIn')}
                 </Link>
-                <Link href="/register" className="px-3 py-1.5 text-[11px] font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
+                <Link href="/register"
+                  className="px-5 py-2 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-wide uppercase whitespace-nowrap">
                   {t('nav', 'register')}
                 </Link>
               </div>
             )}
 
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 text-[#a8bfd4] hover:text-[#c9a84c] transition-colors" aria-label="Menu">
+            {/* Hamburger — shows below xl (1280px) */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="xl:hidden p-2 text-[#a8bfd4] hover:text-[#c9a84c] transition-colors"
+              aria-label="Menu"
+            >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile / tablet menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-[#0a1428]/98 backdrop-blur-md border-t border-[#c9a84c]/15">
+        <div className="xl:hidden bg-[#0a1428]/98 backdrop-blur-md border-t border-[#c9a84c]/15 max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-6 py-4 space-y-1">
             {navLinks.map((link) => (
-              <Link key={link.label} href={link.href} onClick={() => setMobileOpen(false)}
-                className="block py-3 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-widest uppercase border-b border-[#c9a84c]/10">
-                {link.label}
-              </Link>
+              <div key={link.label}>
+                <Link href={link.href} onClick={() => setMobileOpen(false)}
+                  className="block py-3 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-widest uppercase border-b border-[#c9a84c]/10">
+                  {link.label}
+                </Link>
+                {link.children && (
+                  <div className="pl-4 space-y-0">
+                    {link.children.map((child) => (
+                      <Link key={child.href} href={child.href} onClick={() => setMobileOpen(false)}
+                        className="block py-2 text-xs text-[#4a5a70] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wider uppercase">
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
-            <div className="pt-3 pb-1">
+
+            <div className="pt-4 pb-2 flex items-center justify-between border-t border-[#c9a84c]/10">
+              <span className="text-xs text-[#4a5a70] font-[family-name:var(--font-inter)] uppercase tracking-wider">Language</span>
               <LanguageSwitcher />
             </div>
+
             {user ? (
               <div className="pt-2 flex gap-3">
-                <Link href="/portal" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#c9a84c] rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
+                <Link href="/portal" onClick={() => setMobileOpen(false)}
+                  className="flex-1 text-center py-3 text-sm font-medium border border-[#c9a84c]/30 text-[#c9a84c] rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)]">
                   {t('nav', 'myPortal')}
                 </Link>
-                <button onClick={handleSignOut} className="flex-1 text-center py-2.5 text-sm font-medium border border-red-400/30 text-red-400 rounded hover:bg-red-400/5 transition-all font-[family-name:var(--font-inter)]">
+                <button onClick={handleSignOut}
+                  className="flex-1 text-center py-3 text-sm font-medium border border-red-400/30 text-red-400 rounded hover:bg-red-400/5 transition-all font-[family-name:var(--font-inter)]">
                   {t('nav', 'signOut')}
                 </button>
               </div>
             ) : (
               <div className="pt-2 flex gap-3">
-                <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-[#c9a84c]/30 text-[#a8bfd4] rounded hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all font-[family-name:var(--font-inter)]">
+                <Link href="/login"
+                  className="flex-1 text-center py-3 text-sm font-medium border border-[#c9a84c]/30 text-[#a8bfd4] rounded hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all font-[family-name:var(--font-inter)]">
                   {t('nav', 'signIn')}
                 </Link>
-                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
+                <Link href="/register"
+                  className="flex-1 text-center py-3 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)]">
                   {t('nav', 'register')}
                 </Link>
               </div>
