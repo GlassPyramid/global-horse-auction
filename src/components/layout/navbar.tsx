@@ -97,8 +97,8 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 group">
+        <div className="flex items-center h-20 gap-4">
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
             <GHALogo />
             <div className="hidden sm:block">
               <div className="text-lg font-bold tracking-widest text-white leading-none font-[family-name:var(--font-playfair)]" style={{ letterSpacing: "0.25em" }}>
@@ -110,17 +110,17 @@ export function Navbar() {
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex flex-1 justify-center items-center gap-0.5">
             {navLinks.map((link) => (
               <div key={link.label} className="relative"
                 onMouseEnter={() => link.children && setOpenDropdown(link.label)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <Link href={link.href}
-                  className={cn("flex items-center gap-1 px-4 py-2 text-sm tracking-wider font-[family-name:var(--font-inter)] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200 uppercase", openDropdown === link.label && "text-[#c9a84c]")}
+                  className={cn("flex items-center gap-1 px-3 py-2 text-[11px] tracking-wide font-[family-name:var(--font-inter)] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors duration-200 uppercase whitespace-nowrap", openDropdown === link.label && "text-[#c9a84c]")}
                 >
                   {link.label}
-                  {link.children && <ChevronDown className={cn("w-3 h-3 transition-transform", openDropdown === link.label && "rotate-180")} />}
+                  {link.children && <ChevronDown className={cn("w-3 h-3 transition-transform shrink-0", openDropdown === link.label && "rotate-180")} />}
                 </Link>
                 {link.children && openDropdown === link.label && (
                   <div className="absolute top-full left-0 pt-2">
@@ -138,21 +138,21 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
             <div className="hidden lg:block">
               <LanguageSwitcher />
             </div>
 
             {user ? (
-              <div className="hidden lg:flex items-center gap-3">
-                <Link href="/sell" className="px-4 py-2 text-xs font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
+              <div className="hidden lg:flex items-center gap-2">
+                <Link href="/sell" className="px-3 py-1.5 text-[11px] font-bold text-[#c9a84c] border border-[#c9a84c]/30 rounded hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
                   {t('nav', 'sellHorse')}
                 </Link>
                 <Link href="/portal/watchlist" className="p-2 text-[#7a8fa8] hover:text-[#c9a84c] transition-colors" aria-label="Watchlist">
                   <Heart className="w-5 h-5" />
                 </Link>
                 {isAdmin && (
-                  <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/30 text-[#c9a84c] text-xs font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-wider">
+                  <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 border border-[#c9a84c]/30 text-[#c9a84c] text-[11px] font-bold rounded-lg hover:bg-[#c9a84c]/10 transition-all font-[family-name:var(--font-inter)] uppercase tracking-normal">
                     <Shield className="w-3.5 h-3.5" /> {t('nav', 'admin')}
                   </Link>
                 )}
@@ -192,11 +192,11 @@ export function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="hidden lg:flex items-center gap-3">
-                <Link href="/login" className="px-5 py-2 text-sm font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-wider uppercase">
+              <div className="hidden lg:flex items-center gap-2">
+                <Link href="/login" className="px-3 py-1.5 text-[11px] font-medium text-[#a8bfd4] hover:text-[#c9a84c] transition-colors font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
                   {t('nav', 'signIn')}
                 </Link>
-                <Link href="/register" className="px-5 py-2 text-sm font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-wider uppercase">
+                <Link href="/register" className="px-3 py-1.5 text-[11px] font-semibold bg-[#c9a84c] text-[#060c1d] rounded hover:bg-[#e2c97e] transition-all font-[family-name:var(--font-inter)] tracking-normal uppercase whitespace-nowrap">
                   {t('nav', 'register')}
                 </Link>
               </div>

@@ -9,6 +9,8 @@ import { formatDate, categoryLabel, categoryClass } from "@/lib/utils";
 import { HorseCard } from "@/components/horses/horse-card";
 import { CountdownTimer } from "@/components/auctions/countdown-timer";
 import { cn } from "@/lib/utils";
+import { getLang } from "@/lib/lang";
+import { t } from "@/lib/i18n";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -16,6 +18,7 @@ interface Props {
 
 export default async function AuctionDetailPage({ params }: Props) {
   const { id } = await params;
+  const lang = await getLang();
   const supabase = await createClient();
 
   const { data: row } = await supabase
@@ -49,14 +52,14 @@ export default async function AuctionDetailPage({ params }: Props) {
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-10 w-full">
             <Link href="/auctions" className="inline-flex items-center gap-2 text-xs text-[#7a8fa8] hover:text-[#c9a84c] transition-colors mb-6 font-[family-name:var(--font-inter)]">
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Auctions
+              <ArrowLeft className="w-3.5 h-3.5" /> {t(lang, 'auctionDetail', 'backToAuctions')}
             </Link>
             <div className="flex items-center gap-2 mb-3">
               <span className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold tracking-wider uppercase font-[family-name:var(--font-inter)]",
                 isLive ? "bg-red-500/20 border-red-500/40 text-red-300" : "bg-blue-500/20 border-blue-500/40 text-blue-300"
               )}>
                 <span className={cn("w-1.5 h-1.5 rounded-full", isLive ? "bg-red-400 animate-pulse" : "bg-blue-400")} />
-                {isLive ? "Live Now" : auction.status}
+                {isLive ? t(lang, 'auctionDetail', 'liveNow') : auction.status}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white font-[family-name:var(--font-playfair)] mb-2">{auction.title}</h1>
@@ -68,13 +71,13 @@ export default async function AuctionDetailPage({ params }: Props) {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2 text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-              <Gavel className="w-4 h-4 text-[#c9a84c]" /><span>{horses.length} Lots</span>
+              <Gavel className="w-4 h-4 text-[#c9a84c]" /><span>{horses.length} {t(lang, 'auctionDetail', 'lots')}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
               <Clock className="w-4 h-4 text-[#c9a84c]" /><span>{formatDate(auction.startDate)} – {formatDate(auction.endDate)}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[#7a8fa8] font-[family-name:var(--font-inter)]">
-              <MapPin className="w-4 h-4 text-[#c9a84c]" /><span>Live & Online Worldwide</span>
+              <MapPin className="w-4 h-4 text-[#c9a84c]" /><span>{t(lang, 'auctionDetail', 'liveOnline')}</span>
             </div>
           </div>
           {isLive && <CountdownTimer endDate={auction.endDate} compact />}
